@@ -1,0 +1,55 @@
+# .github/workflows/ci.yml
+name: CI - Emergencia Vital
+
+on:
+  push:
+    branches:
+      - develop
+      - "feature/**"
+      - "hotfix/**"
+  pull_request:
+    branches:
+      - main # quando um PR tenta entrar no main
+      - develop # quando um PR tenta entrar no develop
+
+jobs:
+  # ── JOB 1: Backend Spring Boot ──────────────────────────
+  build-backend:
+    name: "Build Backend (Spring Boot + Java 17)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout do codigo"
+        uses: actions/checkout@v4
+
+      - name: "Configurar Java 17"
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      - name: "Build e testes com Maven"
+        run: cd backend && mvn verify --no-transfer-progress
+
+  # ── JOB 2: Frontend Angular ─────────────────────────────
+  build-frontend:
+    name: "Build Frontend (Angular + Node 20)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout do codigo"
+        uses: actions/checkout@v4
+
+      - name: "Configurar Node.js 20"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: "Instalar dependencias (npm ci)"
+        run: cd frontend && npm ci
+
+      - name: "Build Angular (prod)"
+        run: cd frontend && npm run build
