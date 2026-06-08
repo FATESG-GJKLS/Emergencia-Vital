@@ -1,0 +1,91 @@
+<div class="tela-sistema">
+  <aside class="barra-lateral">
+    <div class="marca-menor">
+      <span class="icone-menor"></span>
+      <div>
+        <strong>Nome da Empresa</strong>
+        <small>Sistema de Atendimento</small>
+      </div>
+    </div>
+    <nav>
+      <a routerLink="/atendente/nova-ocorrencia" [class.ativo]="telaAtual === 'nova-ocorrencia'">Nova Ocorrência</a>
+      <a routerLink="/atendente/ocorrencias" [class.ativo]="telaAtual === 'ocorrencias'">Ocorrências</a>
+    </nav>
+    <button class="usuario" type="button" (click)="sair()">Atendente Fulano</button>
+  </aside>
+
+  <main class="conteudo">
+    <header class="topo"><span>Horário de trabalho restante</span><strong>08:00</strong></header>
+
+    @switch (telaAtual) {
+      @case ('nova-ocorrencia') {
+        <section class="cabecalho">
+          <div>
+            <h1>Nova ocorrência</h1>
+            <p>Registro inicial de atendimento recebido pela central.</p>
+          </div>
+          <div class="acoes"><button type="button" (click)="trocarTela('ocorrencias')">Salvar rascunho</button></div>
+        </section>
+
+        <section class="formulario-painel">
+          <div class="campo-grande">
+            <label for="descricao">Descrição da ocorrência</label>
+            <textarea id="descricao" rows="5" placeholder="Descreva o que foi informado na ligação"></textarea>
+          </div>
+
+          <div>
+            <label for="urgencia">Urgência</label>
+            <select id="urgencia">
+              <option>Crítico</option>
+              <option>Alto</option>
+              <option>Médio</option>
+              <option>Baixo</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="solicitante">Solicitante</label>
+            <input id="solicitante" type="text" placeholder="Nome do solicitante" />
+          </div>
+
+          <div>
+            <label for="paciente">Paciente</label>
+            <input id="paciente" type="text" placeholder="Nome do paciente, se informado" />
+          </div>
+
+          <div>
+            <label for="telefone">Telefone</label>
+            <input id="telefone" type="text" placeholder="(00) 00000-0000" />
+          </div>
+
+          <div class="campo-grande">
+            <label for="endereco">Endereço</label>
+            <input id="endereco" type="text" placeholder="Rua, número, bairro e referência" />
+          </div>
+        </section>
+      }
+
+      @case ('ocorrencias') {
+        <section class="cabecalho">
+          <div>
+            <h1>Ocorrências preenchidas hoje</h1>
+            <p>Lista de ocorrências abertas e acompanhadas pelo atendimento.</p>
+          </div>
+        </section>
+        <section class="filtros"><span>Todos <strong>25</strong></span><span>Despachados <strong>5</strong></span><span>Finalizados <strong>5</strong></span></section>
+        <section class="cartao-tabela">
+          <input type="search" placeholder="Pesquisar" />
+          <table>
+            <thead><tr><th>Id</th><th>Urgência</th><th>Abertura</th><th>Equipe</th><th>Status</th><th>Fechamento</th><th>Relatório</th></tr></thead>
+            <tbody>
+              <tr><td>00000</td><td><span class="status critico">Crítico</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td></td></tr>
+              <tr><td>00000</td><td><span class="status alto">Alto</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td></td></tr>
+              <tr><td>00000</td><td><span class="status medio">Médio</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td>link</td></tr>
+              <tr><td>00000</td><td><span class="status baixo">Baixo</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td>link</td></tr>
+            </tbody>
+          </table>
+        </section>
+      }
+    }
+  </main>
+</div>

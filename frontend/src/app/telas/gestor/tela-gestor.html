@@ -1,0 +1,165 @@
+<div class="tela-sistema">
+  <aside class="barra-lateral">
+    <div class="marca-menor">
+      <span class="icone-menor"></span>
+      <div>
+        <strong>Nome da Empresa</strong>
+        <small>Sistema de Gestão</small>
+      </div>
+    </div>
+
+    <nav>
+      <a routerLink="/gestor/dashboard" [class.ativo]="telaAtual === 'dashboard'">Dashboard</a>
+      <a routerLink="/gestor/equipes" [class.ativo]="telaAtual === 'equipes'">Equipes</a>
+      <a routerLink="/gestor/colaboradores" [class.ativo]="telaAtual === 'colaboradores'">Colaboradores</a>
+      <a routerLink="/gestor/ambulancias" [class.ativo]="telaAtual === 'ambulancias'">Ambulâncias</a>
+      <a routerLink="/gestor/ocorrencias" [class.ativo]="telaAtual === 'ocorrencias'">Ocorrências</a>
+    </nav>
+
+    <button class="usuario" type="button" (click)="sair()">Gestor Fulano</button>
+  </aside>
+
+  <main class="conteudo">
+    <header class="topo">
+      <span>Horário de trabalho restante</span>
+      <strong>08:00</strong>
+    </header>
+
+    @switch (telaAtual) {
+      @case ('dashboard') {
+        <section class="cabecalho">
+          <div>
+            <h1>Dashboard</h1>
+            <p>Visão geral operacional do sistema de atendimento.</p>
+          </div>
+        </section>
+
+        <section class="grade-resumo">
+          <article><span>Equipes</span><strong>5</strong><small>Disponíveis: 3</small></article>
+          <article><span>Colaboradores</span><strong>18</strong><small>Ambulâncias: 6</small></article>
+          <article><span>Ambulâncias</span><strong>11</strong><small>Disponíveis: 5</small></article>
+        </section>
+
+        <div class="grade-dashboard">
+          <section class="cartao-tabela">
+            <div class="titulo-cartao"><h2>Ocorrências</h2><button type="button" (click)="trocarTela('ocorrencias')">Abrir</button></div>
+            <table>
+              <thead><tr><th>Id</th><th>Urgência</th><th>Equipe</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>00001</td><td><span class="status critico">Crítico</span></td><td>Equipe 01</td><td><span class="status despachada">Despachada</span></td></tr>
+                <tr><td>00002</td><td><span class="status alto">Alto</span></td><td>Equipe 02</td><td><span class="status atendimento">Em atendimento</span></td></tr>
+                <tr><td>00003</td><td><span class="status medio">Médio</span></td><td>Equipe 03</td><td><span class="status finalizado">Finalizado</span></td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="cartao-lista">
+            <h2>Profissionais sem equipe</h2>
+            <p><strong>Nome Sobrenome</strong><span>Atendente</span></p>
+            <p><strong>Nome Sobrenome</strong><span>Socorrista</span></p>
+            <p><strong>Nome Sobrenome</strong><span>Enfermeiro</span></p>
+          </section>
+        </div>
+      }
+
+      @case ('equipes') {
+        <section class="cabecalho">
+          <div>
+            <h1>Equipes</h1>
+            <p>Cadastro e acompanhamento das equipes de atendimento.</p>
+          </div>
+          <div class="acoes"><button type="button">+ Criar equipe</button></div>
+        </section>
+
+        <section class="filtros"><span>Todos <strong>15</strong></span><span>Em atendimento <strong>5</strong></span><span>Disponível <strong>10</strong></span></section>
+
+        <div class="grade-cartoes">
+          <article class="cartao-equipe destaque"><h2>Equipe 1</h2><span class="status disponivel">Disponível</span><p><strong>Motorista:</strong> Nome</p><p><strong>Atendente:</strong> Nome</p><p><strong>Médico:</strong> Nome</p></article>
+          <article class="cartao-equipe"><h2>Equipe 2</h2><span class="status disponivel">Disponível</span><p><strong>Motorista:</strong> Nome</p><p><strong>Atendente:</strong> Nome</p><p><strong>Médico:</strong> Nome</p></article>
+          <article class="cartao-equipe"><h2>Equipe 3</h2><span class="status disponivel">Disponível</span><p><strong>Motorista:</strong> Nome</p><p><strong>Atendente:</strong> Nome</p><p><strong>Médico:</strong> Nome</p></article>
+          <article class="cartao-equipe"><h2>Equipe 4</h2><span class="status atendimento">Em atendimento</span><p><strong>Motorista:</strong> Nome</p><p><strong>Atendente:</strong> Nome</p><p><strong>Médico:</strong> Nome</p></article>
+          <article class="cartao-equipe"><h2>Equipe 5</h2><span class="status atendimento">Em atendimento</span><p><strong>Motorista:</strong> Nome</p><p><strong>Atendente:</strong> Nome</p><p><strong>Médico:</strong> Nome</p></article>
+        </div>
+      }
+
+      @case ('colaboradores') {
+        <section class="cabecalho">
+          <div>
+            <h1>Colaboradores</h1>
+            <p>Profissionais cadastrados, disponíveis e vinculados a equipes.</p>
+          </div>
+          <div class="acoes"><button type="button">+ Novo colaborador</button><button class="secundario" type="button">Editar colaborador</button></div>
+        </section>
+
+        <section class="grupo-colaboradores">
+          <h2>Profissionais sem equipe</h2>
+          <div class="linha-cartoes">
+            <article class="cartao-pessoa"><span class="avatar"></span><strong>Nome Sobrenome</strong><small>Médico</small><p>CPF: 000.000.000-00</p><p>Email: teste&#64;email.com</p></article>
+            <article class="cartao-pessoa"><span class="avatar"></span><strong>Nome Sobrenome</strong><small>Atendente</small><p>CPF: 000.000.000-00</p><p>Email: teste&#64;email.com</p></article>
+            <article class="cartao-pessoa"><span class="avatar"></span><strong>Nome Sobrenome</strong><small>Socorrista</small><p>CPF: 000.000.000-00</p><p>Email: teste&#64;email.com</p></article>
+          </div>
+        </section>
+
+        <section class="grupo-colaboradores">
+          <h2>Todos</h2>
+          <div class="linha-cartoes varios">
+            @for (numero of [1,2,3,4,5,6,7,8]; track numero) {
+              <article class="cartao-pessoa"><span class="avatar"></span><strong>Nome Sobrenome</strong><small>Equipe {{ numero }}</small><p>Função: Atendente</p><p>Email: teste&#64;email.com</p></article>
+            }
+          </div>
+        </section>
+      }
+
+      @case ('ambulancias') {
+        <section class="cabecalho">
+          <div>
+            <h1>Ambulâncias</h1>
+            <p>Resumo visual das ambulâncias cadastradas no sistema.</p>
+          </div>
+          <div class="acoes"><button type="button">+ Nova ambulância</button><button class="secundario" type="button">Editar ambulância</button></div>
+        </section>
+
+        <section class="filtros"><span>Todos <strong>25</strong></span><span>Disponível <strong>5</strong></span><span>Indisponível <strong>5</strong></span><span>Despachada <strong>5</strong></span><span>Em atendimento <strong>5</strong></span></section>
+
+        <section class="cartao-tabela">
+          <input type="search" placeholder="Pesquisar" />
+          <table>
+            <thead><tr><th>Placa</th><th>Modelo</th><th>Status</th><th>Equipe</th></tr></thead>
+            <tbody>
+              <tr><td>???-?##</td><td>Ambulância de Transporte</td><td><span class="status disponivel">Disponível</span></td><td>Equipe tal tal</td></tr>
+              <tr><td>???-?##</td><td>Suporte Básico de Vida</td><td><span class="status disponivel">Disponível</span></td><td>Equipe tal tal</td></tr>
+              <tr><td>???-?##</td><td>Suporte Avançado de Vida</td><td><span class="status disponivel">Disponível</span></td><td>Equipe tal tal</td></tr>
+              <tr><td>???-?##</td><td>Ambulância de Transporte</td><td><span class="status atendimento">Em atendimento</span></td><td>Equipe tal tal</td></tr>
+              <tr><td>???-?##</td><td>Suporte Básico de Vida</td><td><span class="status indisponivel">Indisponível</span></td><td>Equipe tal tal</td></tr>
+              <tr><td>???-?##</td><td>Suporte Avançado de Vida</td><td><span class="status despachada">Despachada</span></td><td>Equipe tal tal</td></tr>
+            </tbody>
+          </table>
+        </section>
+      }
+
+      @case ('ocorrencias') {
+        <section class="cabecalho">
+          <div>
+            <h1>Ocorrências</h1>
+            <p>Lista geral de ocorrências registradas.</p>
+          </div>
+        </section>
+
+        <section class="filtros"><span>Todos <strong>25</strong></span><span>Despachados <strong>5</strong></span><span>Finalizados <strong>5</strong></span></section>
+
+        <section class="cartao-tabela">
+          <input type="search" placeholder="Pesquisar" />
+          <table>
+            <thead><tr><th>Id</th><th>Urgência</th><th>Abertura</th><th>Equipe</th><th>Status</th><th>Fechamento</th><th>Relatório</th></tr></thead>
+            <tbody>
+              <tr><td>00001</td><td><span class="status critico">Crítico</span></td><td>12:15</td><td>Equipe 01</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td>link</td></tr>
+              <tr><td>00002</td><td><span class="status alto">Alto</span></td><td>12:15</td><td>Equipe 02</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td>link</td></tr>
+              <tr><td>00003</td><td><span class="status medio">Médio</span></td><td>12:15</td><td>Equipe 03</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td>link</td></tr>
+              <tr><td>00004</td><td><span class="status baixo">Baixo</span></td><td>12:15</td><td>Equipe 04</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td>link</td></tr>
+            </tbody>
+          </table>
+        </section>
+      }
+    }
+  </main>
+</div>

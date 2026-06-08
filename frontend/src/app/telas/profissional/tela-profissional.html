@@ -1,0 +1,67 @@
+<div class="tela-sistema">
+  <aside class="barra-lateral">
+    <div class="marca-menor">
+      <span class="icone-menor"></span>
+      <div>
+        <strong>Nome da Empresa</strong>
+        <small>Sistema de Atendimento</small>
+      </div>
+    </div>
+    <nav>
+      <a routerLink="/profissional/ocorrencias" [class.ativo]="telaAtual === 'ocorrencias'">Ocorrências</a>
+      <a routerLink="/profissional/relatorios" [class.ativo]="telaAtual === 'relatorios'">Relatórios</a>
+    </nav>
+    <button class="usuario" type="button" (click)="sair()">Profissional Fulano</button>
+  </aside>
+
+  <main class="conteudo">
+    <header class="topo"><span>Horário de trabalho restante</span><strong>08:00</strong></header>
+
+    @switch (telaAtual) {
+      @case ('ocorrencias') {
+        <section class="cabecalho">
+          <div>
+            <h1>Ocorrências atribuídas</h1>
+            <p>Acompanhamento inicial para o perfil profissional.</p>
+          </div>
+        </section>
+        <section class="filtros"><span>Todos <strong>25</strong></span><span>Em atendimento <strong>5</strong></span><span>Finalizados <strong>5</strong></span></section>
+        <section class="cartao-tabela">
+          <input type="search" placeholder="Pesquisar" />
+          <table>
+            <thead><tr><th>Id</th><th>Urgência</th><th>Abertura</th><th>Status</th><th>Relatório</th></tr></thead>
+            <tbody>
+              <tr><td>00000</td><td><span class="status critico">Crítico</span></td><td>12:15</td><td><span class="status atendimento">Em Atendimento</span></td><td><button class="link-tabela" type="button" (click)="trocarTela('relatorios')">abrir</button></td></tr>
+              <tr><td>00000</td><td><span class="status alto">Alto</span></td><td>12:15</td><td><span class="status finalizado">Finalizado</span></td><td><button class="link-tabela" type="button" (click)="trocarTela('relatorios')">abrir</button></td></tr>
+              <tr><td>00000</td><td><span class="status medio">Médio</span></td><td>12:15</td><td><span class="status despachada">Despachada</span></td><td><button class="link-tabela" type="button" (click)="trocarTela('relatorios')">abrir</button></td></tr>
+            </tbody>
+          </table>
+        </section>
+      }
+
+      @case ('relatorios') {
+        <section class="cabecalho">
+          <div>
+            <h1>Relatórios</h1>
+            <p>Relatórios de atendimento preenchidos pelo profissional.</p>
+          </div>
+          <div class="acoes"><button type="button">+ Novo relatório</button></div>
+        </section>
+
+        <section class="filtros"><span>Todos <strong>12</strong></span><span>Pendentes <strong>3</strong></span><span>Enviados <strong>9</strong></span></section>
+
+        <section class="cartao-tabela">
+          <input type="search" placeholder="Pesquisar" />
+          <table>
+            <thead><tr><th>Id</th><th>Ocorrência</th><th>Paciente</th><th>Status</th><th>Atualização</th></tr></thead>
+            <tbody>
+              <tr><td>REL-001</td><td>00000</td><td>Não identificado</td><td><span class="status despachada">Pendente</span></td><td>13:40</td></tr>
+              <tr><td>REL-002</td><td>00000</td><td>Nome Sobrenome</td><td><span class="status finalizado">Enviado</span></td><td>13:10</td></tr>
+              <tr><td>REL-003</td><td>00000</td><td>Nome Sobrenome</td><td><span class="status finalizado">Enviado</span></td><td>12:55</td></tr>
+            </tbody>
+          </table>
+        </section>
+      }
+    }
+  </main>
+</div>

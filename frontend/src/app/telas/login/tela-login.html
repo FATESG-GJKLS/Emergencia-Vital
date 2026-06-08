@@ -1,0 +1,52 @@
+<main class="pagina-login">
+  <section class="cartao-login" aria-label="Tela de login">
+    <div class="marca">
+      <div class="icone-marca" aria-hidden="true"></div>
+      <div>
+        <h1>Nome da Empresa</h1>
+        <p>Sistema de Atendimento</p>
+      </div>
+    </div>
+
+    <div class="conteudo-login">
+      <span class="etiqueta">Acesso restrito</span>
+      <h2>Entrar no sistema</h2>
+      <p class="descricao">Informe seu usuário e senha para acessar as telas do seu perfil.</p>
+
+      <form (ngSubmit)="entrar()" class="formulario-login">
+        <label for="usuario">Usuário</label>
+        <input
+          id="usuario"
+          name="usuario"
+          type="text"
+          [(ngModel)]="usuario"
+          autocomplete="username"
+          placeholder="Digite seu usuário"
+        />
+
+        <label for="senha">Senha</label>
+        <input
+          id="senha"
+          name="senha"
+          type="password"
+          [(ngModel)]="senha"
+          autocomplete="current-password"
+          placeholder="Digite sua senha"
+        />
+
+        @if (mensagemErro) {
+          <p class="mensagem-erro">{{ mensagemErro }}</p>
+        }
+
+        <button type="submit">Entrar</button>
+      </form>
+
+      <div class="ajuda-login">
+        <strong>Acessos de teste</strong>
+        <p>Gestor: admin/admin ou testeadmin/testeadmin</p>
+        <p>Profissional: testepro/testepro</p>
+        <p>Atendente: testeaten/testeaten</p>
+      </div>
+    </div>
+  </section>
+</main>
