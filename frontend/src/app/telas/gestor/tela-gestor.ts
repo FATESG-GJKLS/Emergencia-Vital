@@ -1,7 +1,15 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-type TelaGestorSelecionada = 'dashboard' | 'equipes' | 'colaboradores' | 'ambulancias' | 'ocorrencias';
+type TelaGestorSelecionada =
+  | 'dashboard'
+  | 'equipes'
+  | 'criar-equipe'
+  | 'colaboradores'
+  | 'cadastrar-colaborador'
+  | 'ambulancias'
+  | 'cadastrar-ambulancia'
+  | 'ocorrencias';
 
 @Component({
   selector: 'app-tela-gestor',
@@ -11,7 +19,16 @@ type TelaGestorSelecionada = 'dashboard' | 'equipes' | 'colaboradores' | 'ambula
 })
 export class TelaGestor {
   telaAtual: TelaGestorSelecionada = 'dashboard';
-  private readonly telasPermitidas: TelaGestorSelecionada[] = ['dashboard', 'equipes', 'colaboradores', 'ambulancias', 'ocorrencias'];
+  private readonly telasPermitidas: TelaGestorSelecionada[] = [
+    'dashboard',
+    'equipes',
+    'criar-equipe',
+    'colaboradores',
+    'cadastrar-colaborador',
+    'ambulancias',
+    'cadastrar-ambulancia',
+    'ocorrencias'
+  ];
 
   constructor(
     private readonly rota: ActivatedRoute,

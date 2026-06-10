@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-type TelaAtendenteSelecionada = 'nova-ocorrencia' | 'ocorrencias';
+type TelaAtendenteSelecionada = 'nova-ocorrencia' | 'nova-ocorrencia-localizacao' | 'nova-ocorrencia-despacho' | 'ocorrencias';
 
 @Component({
   selector: 'app-tela-atendente',
@@ -11,7 +11,7 @@ type TelaAtendenteSelecionada = 'nova-ocorrencia' | 'ocorrencias';
 })
 export class TelaAtendente {
   telaAtual: TelaAtendenteSelecionada = 'ocorrencias';
-  private readonly telasPermitidas: TelaAtendenteSelecionada[] = ['nova-ocorrencia', 'ocorrencias'];
+  private readonly telasPermitidas: TelaAtendenteSelecionada[] = ['nova-ocorrencia', 'nova-ocorrencia-localizacao', 'nova-ocorrencia-despacho', 'ocorrencias'];
 
   constructor(
     private readonly rota: ActivatedRoute,

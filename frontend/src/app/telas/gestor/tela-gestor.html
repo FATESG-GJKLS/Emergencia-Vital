@@ -10,9 +10,9 @@
 
     <nav>
       <a routerLink="/gestor/dashboard" [class.ativo]="telaAtual === 'dashboard'">Dashboard</a>
-      <a routerLink="/gestor/equipes" [class.ativo]="telaAtual === 'equipes'">Equipes</a>
-      <a routerLink="/gestor/colaboradores" [class.ativo]="telaAtual === 'colaboradores'">Colaboradores</a>
-      <a routerLink="/gestor/ambulancias" [class.ativo]="telaAtual === 'ambulancias'">Ambulâncias</a>
+      <a routerLink="/gestor/equipes" [class.ativo]="telaAtual === 'equipes' || telaAtual === 'criar-equipe'">Equipes</a>
+      <a routerLink="/gestor/colaboradores" [class.ativo]="telaAtual === 'colaboradores' || telaAtual === 'cadastrar-colaborador'">Colaboradores</a>
+      <a routerLink="/gestor/ambulancias" [class.ativo]="telaAtual === 'ambulancias' || telaAtual === 'cadastrar-ambulancia'">Ambulâncias</a>
       <a routerLink="/gestor/ocorrencias" [class.ativo]="telaAtual === 'ocorrencias'">Ocorrências</a>
     </nav>
 
@@ -20,11 +20,6 @@
   </aside>
 
   <main class="conteudo">
-    <header class="topo">
-      <span>Horário de trabalho restante</span>
-      <strong>08:00</strong>
-    </header>
-
     @switch (telaAtual) {
       @case ('dashboard') {
         <section class="cabecalho">
@@ -35,9 +30,9 @@
         </section>
 
         <section class="grade-resumo">
-          <article><span>Equipes</span><strong>5</strong><small>Disponíveis: 3</small></article>
-          <article><span>Colaboradores</span><strong>18</strong><small>Ambulâncias: 6</small></article>
-          <article><span>Ambulâncias</span><strong>11</strong><small>Disponíveis: 5</small></article>
+          <button class="cartao-atalho" type="button" (click)="trocarTela('equipes')"><span>Equipes</span><strong>5</strong><small>Disponíveis: 3</small></button>
+          <button class="cartao-atalho" type="button" (click)="trocarTela('colaboradores')"><span>Colaboradores</span><strong>18</strong><small>Ambulâncias: 6</small></button>
+          <button class="cartao-atalho" type="button" (click)="trocarTela('ambulancias')"><span>Ambulâncias</span><strong>11</strong><small>Disponíveis: 5</small></button>
         </section>
 
         <div class="grade-dashboard">
@@ -54,9 +49,9 @@
           </section>
 
           <section class="cartao-lista">
-            <h2>Profissionais sem equipe</h2>
-            <p><strong>Nome Sobrenome</strong><span>Atendente</span></p>
-            <p><strong>Nome Sobrenome</strong><span>Socorrista</span></p>
+            <div class="titulo-cartao"><h2>Profissionais sem equipe</h2><button type="button" (click)="trocarTela('colaboradores')">Ver</button></div>
+            <p><strong>Nome Sobrenome</strong><span>Motorista</span></p>
+            <p><strong>Nome Sobrenome</strong><span>Medico</span></p>
             <p><strong>Nome Sobrenome</strong><span>Enfermeiro</span></p>
           </section>
         </div>
@@ -68,18 +63,56 @@
             <h1>Equipes</h1>
             <p>Cadastro e acompanhamento das equipes de atendimento.</p>
           </div>
-          <div class="acoes"><button type="button">+ Criar equipe</button></div>
+          <div class="acoes"><button type="button" (click)="trocarTela('criar-equipe')">+ Criar equipe</button></div>
         </section>
 
-        <section class="filtros"><span>Todos <strong>15</strong></span><span>Em atendimento <strong>5</strong></span><span>Disponível <strong>10</strong></span></section>
+        <section class="filtros"><button type="button">Todos <strong>15</strong></button><button type="button">Em atendimento <strong>5</strong></button><button type="button">Disponível <strong>10</strong></button></section>
 
         <div class="grade-cartoes">
-          <article class="cartao-equipe destaque"><h2>Equipe 1</h2><span class="status disponivel">Disponível</span><p><strong>Motorista:</strong> Nome</p><p><strong>Atendente:</strong> Nome</p><p><strong>Médico:</strong> Nome</p></article>
-          <article class="cartao-equipe"><h2>Equipe 2</h2><span class="status disponivel">Disponível</span><p><strong>Motorista:</strong> Nome</p><p><strong>Atendente:</strong> Nome</p><p><strong>Médico:</strong> Nome</p></article>
-          <article class="cartao-equipe"><h2>Equipe 3</h2><span class="status disponivel">Disponível</span><p><strong>Motorista:</strong> Nome</p><p><strong>Atendente:</strong> Nome</p><p><strong>Médico:</strong> Nome</p></article>
-          <article class="cartao-equipe"><h2>Equipe 4</h2><span class="status atendimento">Em atendimento</span><p><strong>Motorista:</strong> Nome</p><p><strong>Atendente:</strong> Nome</p><p><strong>Médico:</strong> Nome</p></article>
-          <article class="cartao-equipe"><h2>Equipe 5</h2><span class="status atendimento">Em atendimento</span><p><strong>Motorista:</strong> Nome</p><p><strong>Atendente:</strong> Nome</p><p><strong>Médico:</strong> Nome</p></article>
+          @for (numero of [1,2,3,4,5]; track numero) {
+            <button class="cartao-equipe" type="button" (click)="trocarTela('criar-equipe')">
+              <h2>Equipe {{ numero }}</h2>
+              <span class="status" [class.disponivel]="numero < 4" [class.atendimento]="numero >= 4">{{ numero < 4 ? 'Disponível' : 'Em atendimento' }}</span>
+              <p><strong>Motorista:</strong> Nome</p>
+              <p><strong>Atendente:</strong> Nome</p>
+              <p><strong>Médico:</strong> Nome</p>
+            </button>
+          }
         </div>
+      }
+
+      @case ('criar-equipe') {
+        <section class="cabecalho">
+          <div>
+            <h1>Criar nova equipe</h1>
+            <p>Monte a equipe com profissionais disponíveis.</p>
+          </div>
+        </section>
+
+        <section class="formulario-painel formulario-curto">
+          <div>
+            <label for="motorista">Motorista de ambulância</label>
+            <select id="motorista"><option>Selecione</option><option>Nome Sobrenome</option></select>
+          </div>
+          <div>
+            <label for="ambulancia">Ambulância</label>
+            <select id="ambulancia"><option>Selecione</option><option>???-?##</option></select>
+          </div>
+          <div>
+            <label for="medico">Médico</label>
+            <select id="medico"><option>Selecione</option><option>Nome Sobrenome</option></select>
+          </div>
+          <div class="campo-grande campo-duplo">
+            <div>
+              <label for="enfermeiro">Enfermeiro</label>
+              <select id="enfermeiro"><option>Selecione</option><option>Nome Sobrenome</option></select>
+            </div>
+          </div>
+          <div class="acoes-formulario campo-grande">
+            <button type="button" (click)="trocarTela('equipes')">Criar Equipe</button>
+            <button class="secundario" type="button" (click)="trocarTela('equipes')">Cancelar</button>
+          </div>
+        </section>
       }
 
       @case ('colaboradores') {
@@ -88,15 +121,15 @@
             <h1>Colaboradores</h1>
             <p>Profissionais cadastrados, disponíveis e vinculados a equipes.</p>
           </div>
-          <div class="acoes"><button type="button">+ Novo colaborador</button><button class="secundario" type="button">Editar colaborador</button></div>
+          <div class="acoes"><button type="button" (click)="trocarTela('cadastrar-colaborador')">+ Novo colaborador</button><button class="secundario" type="button" (click)="trocarTela('cadastrar-colaborador')">Editar colaborador</button></div>
         </section>
 
         <section class="grupo-colaboradores">
           <h2>Profissionais sem equipe</h2>
           <div class="linha-cartoes">
-            <article class="cartao-pessoa"><span class="avatar"></span><strong>Nome Sobrenome</strong><small>Médico</small><p>CPF: 000.000.000-00</p><p>Email: teste&#64;email.com</p></article>
-            <article class="cartao-pessoa"><span class="avatar"></span><strong>Nome Sobrenome</strong><small>Atendente</small><p>CPF: 000.000.000-00</p><p>Email: teste&#64;email.com</p></article>
-            <article class="cartao-pessoa"><span class="avatar"></span><strong>Nome Sobrenome</strong><small>Socorrista</small><p>CPF: 000.000.000-00</p><p>Email: teste&#64;email.com</p></article>
+            <button class="cartao-pessoa" type="button" (click)="trocarTela('cadastrar-colaborador')"><span class="avatar"></span><strong>Nome Sobrenome</strong><small>Médico</small><p>CPF: 000.000.000-00</p><p>Email: teste&#64;email.com</p></button>
+            <button class="cartao-pessoa" type="button" (click)="trocarTela('cadastrar-colaborador')"><span class="avatar"></span><strong>Nome Sobrenome</strong><small>Atendente</small><p>CPF: 000.000.000-00</p><p>Email: teste&#64;email.com</p></button>
+            <button class="cartao-pessoa" type="button" (click)="trocarTela('cadastrar-colaborador')"><span class="avatar"></span><strong>Nome Sobrenome</strong><small>Enfermeiro</small><p>CPF: 000.000.000-00</p><p>Email: teste&#64;email.com</p></button>
           </div>
         </section>
 
@@ -104,61 +137,54 @@
           <h2>Todos</h2>
           <div class="linha-cartoes varios">
             @for (numero of [1,2,3,4,5,6,7,8]; track numero) {
-              <article class="cartao-pessoa"><span class="avatar"></span><strong>Nome Sobrenome</strong><small>Equipe {{ numero }}</small><p>Função: Atendente</p><p>Email: teste&#64;email.com</p></article>
+              <button class="cartao-pessoa" type="button" (click)="trocarTela('cadastrar-colaborador')"><span class="avatar"></span><strong>Nome Sobrenome</strong><small>Equipe {{ numero }}</small><p>Função: Atendente</p><p>Email: teste&#64;email.com</p></button>
             }
           </div>
         </section>
       }
 
+      @case ('cadastrar-colaborador') {
+        <section class="cabecalho"><div><h1>Cadastrar novo colaborador</h1><p>Preencha os dados básicos do profissional.</p></div></section>
+        <section class="formulario-painel formulario-curto">
+          <div><label for="nome-colaborador">Nome completo</label><input id="nome-colaborador" type="text" placeholder="Nome Sobrenome" /></div>
+          <div><label for="cpf-colaborador">CPF</label><input id="cpf-colaborador" type="text" placeholder="000.000.000-00" /></div>
+          <div><label for="email-colaborador">Email</label><input id="email-colaborador" type="email" placeholder="seuemail@email.com" /></div>
+          <div><label for="senha-colaborador">Senha</label><input id="senha-colaborador" type="password" placeholder="SuaSenhaSegura#123" /></div>
+          <div><label for="funcao-colaborador">Função</label><select id="funcao-colaborador"><option>Selecione</option><option>Atendente</option><option>Médico</option><option>Enfermeiro</option><option>Motorista</option></select></div>
+          <div class="acoes-formulario campo-grande"><button type="button" (click)="trocarTela('colaboradores')">Cadastrar</button><button class="secundario" type="button" (click)="trocarTela('colaboradores')">Cancelar</button></div>
+        </section>
+      }
+
       @case ('ambulancias') {
         <section class="cabecalho">
-          <div>
-            <h1>Ambulâncias</h1>
-            <p>Resumo visual das ambulâncias cadastradas no sistema.</p>
-          </div>
-          <div class="acoes"><button type="button">+ Nova ambulância</button><button class="secundario" type="button">Editar ambulância</button></div>
+          <div><h1>Ambulâncias</h1><p>Resumo visual das ambulâncias cadastradas no sistema.</p></div>
+          <div class="acoes"><button type="button" (click)="trocarTela('cadastrar-ambulancia')">+ Nova ambulância</button><button class="secundario" type="button" (click)="trocarTela('cadastrar-ambulancia')">Editar ambulância</button></div>
         </section>
+        <section class="filtros"><button type="button">Todos <strong>25</strong></button><button type="button">Disponível <strong>5</strong></button><button type="button">Indisponível <strong>5</strong></button><button type="button">Despachada <strong>5</strong></button><button type="button">Em atendimento <strong>5</strong></button></section>
+        <section class="cartao-tabela"><input type="search" placeholder="Pesquisar" /><table><thead><tr><th>Placa</th><th>Modelo</th><th>Status</th><th>Equipe</th></tr></thead><tbody>
+          <tr><td>???-?##</td><td>Ambulância de Transporte</td><td><span class="status disponivel">Disponível</span></td><td>Equipe tal tal</td></tr>
+          <tr><td>???-?##</td><td>Suporte Básico de Vida</td><td><span class="status disponivel">Disponível</span></td><td>Equipe tal tal</td></tr>
+          <tr><td>???-?##</td><td>Suporte Avançado de Vida</td><td><span class="status atendimento">Em atendimento</span></td><td>Equipe tal tal</td></tr>
+        </tbody></table></section>
+      }
 
-        <section class="filtros"><span>Todos <strong>25</strong></span><span>Disponível <strong>5</strong></span><span>Indisponível <strong>5</strong></span><span>Despachada <strong>5</strong></span><span>Em atendimento <strong>5</strong></span></section>
-
-        <section class="cartao-tabela">
-          <input type="search" placeholder="Pesquisar" />
-          <table>
-            <thead><tr><th>Placa</th><th>Modelo</th><th>Status</th><th>Equipe</th></tr></thead>
-            <tbody>
-              <tr><td>???-?##</td><td>Ambulância de Transporte</td><td><span class="status disponivel">Disponível</span></td><td>Equipe tal tal</td></tr>
-              <tr><td>???-?##</td><td>Suporte Básico de Vida</td><td><span class="status disponivel">Disponível</span></td><td>Equipe tal tal</td></tr>
-              <tr><td>???-?##</td><td>Suporte Avançado de Vida</td><td><span class="status disponivel">Disponível</span></td><td>Equipe tal tal</td></tr>
-              <tr><td>???-?##</td><td>Ambulância de Transporte</td><td><span class="status atendimento">Em atendimento</span></td><td>Equipe tal tal</td></tr>
-              <tr><td>???-?##</td><td>Suporte Básico de Vida</td><td><span class="status indisponivel">Indisponível</span></td><td>Equipe tal tal</td></tr>
-              <tr><td>???-?##</td><td>Suporte Avançado de Vida</td><td><span class="status despachada">Despachada</span></td><td>Equipe tal tal</td></tr>
-            </tbody>
-          </table>
+      @case ('cadastrar-ambulancia') {
+        <section class="cabecalho"><div><h1>Cadastrar nova ambulância</h1><p>Dados do veículo usado no atendimento.</p></div></section>
+        <section class="formulario-painel formulario-curto">
+          <div><label for="modelo-ambulancia">Modelo da ambulância</label><select id="modelo-ambulancia"><option>Selecione</option><option>Unidade Suporte Básico (USB)</option><option>Unidade Suporte Avançado (USA)</option></select></div>
+          <div><label for="placa-ambulancia">Placa</label><input id="placa-ambulancia" type="text" placeholder="???-?##" /></div>
+          <div><label for="situacao-ambulancia">Situação</label><select id="situacao-ambulancia"><option>Disponível</option><option>Indisponível</option></select></div>
+          <div class="acoes-formulario campo-grande"><button type="button" (click)="trocarTela('ambulancias')">Cadastrar</button><button class="secundario" type="button" (click)="trocarTela('ambulancias')">Cancelar</button></div>
         </section>
       }
 
       @case ('ocorrencias') {
-        <section class="cabecalho">
-          <div>
-            <h1>Ocorrências</h1>
-            <p>Lista geral de ocorrências registradas.</p>
-          </div>
-        </section>
-
-        <section class="filtros"><span>Todos <strong>25</strong></span><span>Despachados <strong>5</strong></span><span>Finalizados <strong>5</strong></span></section>
-
-        <section class="cartao-tabela">
-          <input type="search" placeholder="Pesquisar" />
-          <table>
-            <thead><tr><th>Id</th><th>Urgência</th><th>Abertura</th><th>Equipe</th><th>Status</th><th>Fechamento</th><th>Relatório</th></tr></thead>
-            <tbody>
-              <tr><td>00001</td><td><span class="status critico">Crítico</span></td><td>12:15</td><td>Equipe 01</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td>link</td></tr>
-              <tr><td>00002</td><td><span class="status alto">Alto</span></td><td>12:15</td><td>Equipe 02</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td>link</td></tr>
-              <tr><td>00003</td><td><span class="status medio">Médio</span></td><td>12:15</td><td>Equipe 03</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td>link</td></tr>
-              <tr><td>00004</td><td><span class="status baixo">Baixo</span></td><td>12:15</td><td>Equipe 04</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td>link</td></tr>
-            </tbody>
-          </table>
-        </section>
+        <section class="cabecalho"><div><h1>Ocorrências</h1><p>Lista geral de ocorrências registradas.</p></div></section>
+        <section class="filtros"><button type="button">Todos <strong>25</strong></button><button type="button">Despachados <strong>5</strong></button><button type="button">Finalizados <strong>5</strong></button></section>
+        <section class="cartao-tabela"><input type="search" placeholder="Pesquisar" /><table><thead><tr><th>Id</th><th>Urgência</th><th>Abertura</th><th>Equipe</th><th>Status</th><th>Fechamento</th><th>Relatório</th></tr></thead><tbody>
+          <tr><td>00001</td><td><span class="status critico">Crítico</span></td><td>12:15</td><td>Equipe 01</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td><button class="link-tabela" type="button" (click)="trocarTela('ocorrencias')">link</button></td></tr>
+          <tr><td>00002</td><td><span class="status alto">Alto</span></td><td>12:15</td><td>Equipe 02</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td><button class="link-tabela" type="button" (click)="trocarTela('ocorrencias')">link</button></td></tr>
+        </tbody></table></section>
       }
     }
   </main>

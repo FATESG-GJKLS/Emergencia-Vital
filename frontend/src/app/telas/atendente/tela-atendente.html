@@ -8,7 +8,7 @@
       </div>
     </div>
     <nav>
-      <a routerLink="/atendente/nova-ocorrencia" [class.ativo]="telaAtual === 'nova-ocorrencia'">Nova Ocorrência</a>
+      <a routerLink="/atendente/nova-ocorrencia" [class.ativo]="telaAtual === 'nova-ocorrencia' || telaAtual === 'nova-ocorrencia-localizacao' || telaAtual === 'nova-ocorrencia-despacho'">Nova Ocorrência</a>
       <a routerLink="/atendente/ocorrencias" [class.ativo]="telaAtual === 'ocorrencias'">Ocorrências</a>
     </nav>
     <button class="usuario" type="button" (click)="sair()">Atendente Fulano</button>
@@ -20,68 +20,64 @@
     @switch (telaAtual) {
       @case ('nova-ocorrencia') {
         <section class="cabecalho">
-          <div>
-            <h1>Nova ocorrência</h1>
-            <p>Registro inicial de atendimento recebido pela central.</p>
-          </div>
-          <div class="acoes"><button type="button" (click)="trocarTela('ocorrencias')">Salvar rascunho</button></div>
+          <div><h1>Criar nova ocorrência</h1><p>Etapa 1 de 3</p></div>
         </section>
 
-        <section class="formulario-painel">
-          <div class="campo-grande">
-            <label for="descricao">Descrição da ocorrência</label>
-            <textarea id="descricao" rows="5" placeholder="Descreva o que foi informado na ligação"></textarea>
-          </div>
-
-          <div>
-            <label for="urgencia">Urgência</label>
-            <select id="urgencia">
-              <option>Crítico</option>
-              <option>Alto</option>
-              <option>Médio</option>
-              <option>Baixo</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="solicitante">Solicitante</label>
-            <input id="solicitante" type="text" placeholder="Nome do solicitante" />
-          </div>
-
-          <div>
-            <label for="paciente">Paciente</label>
-            <input id="paciente" type="text" placeholder="Nome do paciente, se informado" />
-          </div>
-
-          <div>
-            <label for="telefone">Telefone</label>
-            <input id="telefone" type="text" placeholder="(00) 00000-0000" />
-          </div>
-
-          <div class="campo-grande">
-            <label for="endereco">Endereço</label>
-            <input id="endereco" type="text" placeholder="Rua, número, bairro e referência" />
-          </div>
+        <section class="formulario-painel formulario-largo">
+          <div><label for="solicitante">Solicitante</label><input id="solicitante" type="text" placeholder="Nome" /></div>
+          <div><label for="cpf-solicitante">CPF</label><input id="cpf-solicitante" type="text" placeholder="Não sei ou não existe" /></div>
+          <div><label for="telefone-contato">Telefone de contato</label><input id="telefone-contato" type="text" placeholder="(00) 00000-0000" /></div>
+          <div class="campo-grande subtitulo-formulario"><h2>Pacientes</h2><p>Quantidade de pacientes</p></div>
+          <div><label for="paciente">Paciente 01</label><input id="paciente" type="text" placeholder="Não identificado" /></div>
+          <div><label for="data-nascimento">Data nascimento</label><input id="data-nascimento" type="text" placeholder="00/00/0000" /></div>
+          <div><label for="cpf-paciente">CPF</label><input id="cpf-paciente" type="text" placeholder="000.000.000-00" /></div>
+          <div class="campo-grande"><label for="observacao">Observação</label><input id="observacao" type="text" placeholder="Ex: alergia, condição, acompanhamento, sintomas..." /></div>
+          <div class="acoes-formulario campo-grande"><button type="button" (click)="trocarTela('nova-ocorrencia-localizacao')">Prosseguir</button></div>
         </section>
+      }
+
+      @case ('nova-ocorrencia-localizacao') {
+        <section class="cabecalho"><div><h1>Criar nova ocorrência</h1><p>Etapa 2 de 3</p></div></section>
+        <section class="formulario-painel formulario-largo">
+          <div class="campo-grande"><label for="descricao">Descrição</label><textarea id="descricao" rows="8"></textarea></div>
+          <div><label for="nivel-urgencia">Nível de urgência</label><select id="nivel-urgencia"><option>Crítico</option><option>Alto</option><option>Médio</option><option>Baixo</option></select></div>
+          <div><label for="localizacao">Localização</label><input id="localizacao" type="text" placeholder="Rua, bairro, número e referência" /></div>
+          <div><label for="orgao-acessado">Órgão acessado</label><select id="orgao-acessado"><option>SAMU</option><option>Bombeiros</option><option>Polícia</option></select></div>
+          <div><label for="bairro">Bairro</label><input id="bairro" type="text" placeholder="Bairro" /></div>
+          <div class="acoes-formulario campo-grande"><button class="secundario" type="button" (click)="trocarTela('nova-ocorrencia')">Voltar</button><button type="button" (click)="trocarTela('nova-ocorrencia-despacho')">Prosseguir</button></div>
+        </section>
+      }
+
+      @case ('nova-ocorrencia-despacho') {
+        <section class="cabecalho"><div><h1>Criar nova ocorrência</h1><p>Etapa 3 de 3</p></div></section>
+        <section class="grade-cartoes despacho-equipe">
+          @for (numero of [1,2,3,4]; track numero) {
+            <button class="cartao-equipe" type="button" (click)="trocarTela('ocorrencias')">
+              <h2>Equipe {{ numero }}</h2>
+              <span class="status disponivel">Disponível</span>
+              <p><strong>Médico:</strong> Nome</p>
+              <p><strong>Atendente:</strong> Nome</p>
+              <p><strong>Ambulância:</strong> Placa</p>
+            </button>
+          }
+        </section>
+        <div class="acoes-formulario bloco-acoes"><button class="secundario" type="button" (click)="trocarTela('nova-ocorrencia-localizacao')">Voltar</button><button type="button" (click)="trocarTela('ocorrencias')">Despachar</button></div>
       }
 
       @case ('ocorrencias') {
         <section class="cabecalho">
-          <div>
-            <h1>Ocorrências preenchidas hoje</h1>
-            <p>Lista de ocorrências abertas e acompanhadas pelo atendimento.</p>
-          </div>
+          <div><h1>Ocorrências preenchidas hoje</h1><p>Lista de ocorrências abertas e acompanhadas pelo atendimento.</p></div>
         </section>
-        <section class="filtros"><span>Todos <strong>25</strong></span><span>Despachados <strong>5</strong></span><span>Finalizados <strong>5</strong></span></section>
+        <section class="filtros"><button type="button">Todos <strong>25</strong></button><button type="button">Despachados <strong>5</strong></button><button type="button">Finalizados <strong>5</strong></button></section>
         <section class="cartao-tabela">
           <input type="search" placeholder="Pesquisar" />
           <table>
             <thead><tr><th>Id</th><th>Urgência</th><th>Abertura</th><th>Equipe</th><th>Status</th><th>Fechamento</th><th>Relatório</th></tr></thead>
             <tbody>
-              <tr><td>00000</td><td><span class="status critico">Crítico</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td></td></tr>
-              <tr><td>00000</td><td><span class="status alto">Alto</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td></td></tr>
-              <tr><td>00000</td><td><span class="status medio">Médio</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td>link</td></tr>
-              <tr><td>00000</td><td><span class="status baixo">Baixo</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td>link</td></tr>
+              <tr><td>00000</td><td><span class="status critico">Crítico</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td><button class="link-tabela" type="button" (click)="trocarTela('ocorrencias')">abrir</button></td></tr>
+              <tr><td>00000</td><td><span class="status alto">Alto</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td><button class="link-tabela" type="button" (click)="trocarTela('ocorrencias')">abrir</button></td></tr>
+              <tr><td>00000</td><td><span class="status medio">Médio</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td><button class="link-tabela" type="button" (click)="trocarTela('ocorrencias')">abrir</button></td></tr>
+              <tr><td>00000</td><td><span class="status baixo">Baixo</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td><button class="link-tabela" type="button" (click)="trocarTela('ocorrencias')">abrir</button></td></tr>
             </tbody>
           </table>
         </section>

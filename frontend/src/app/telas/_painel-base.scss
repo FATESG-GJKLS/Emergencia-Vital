@@ -528,3 +528,258 @@ nav button:hover {
     grid-template-columns: 1fr;
   }
 }
+
+button {
+  font-family: inherit;
+}
+
+.acoes button,
+.acoes-formulario button,
+.bloco-acoes button,
+.cabecalho-relatorio button,
+.mensagem-centro button {
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 18px;
+  color: #ffffff;
+  background: #2563eb;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.acoes button:hover,
+.acoes-formulario button:hover,
+.bloco-acoes button:hover,
+.cabecalho-relatorio button:hover,
+.mensagem-centro button:hover {
+  background: #1d4ed8;
+}
+
+.acoes-formulario .secundario,
+.bloco-acoes .secundario,
+.cabecalho-relatorio button {
+  color: #475569;
+  background: #dbeafe;
+}
+
+.acoes-formulario .secundario:hover,
+.bloco-acoes .secundario:hover,
+.cabecalho-relatorio button:hover {
+  color: #334155;
+  background: #bfdbfe;
+}
+
+.filtros button {
+  display: inline-flex;
+  gap: 18px;
+  align-items: center;
+  min-width: 120px;
+  border: 1px solid #dbe4f0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: #334155;
+  background: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.filtros button:first-child {
+  background: #eaf2ff;
+}
+
+.filtros button:hover {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.cartao-atalho,
+.cartao-equipe,
+.cartao-pessoa {
+  text-align: left;
+  cursor: pointer;
+}
+
+.cartao-atalho {
+  border: 1px solid #d7e1ee;
+  border-radius: 14px;
+  padding: 20px;
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+}
+
+.cartao-atalho:hover,
+.cartao-equipe:hover,
+.cartao-pessoa:hover {
+  transform: translateY(-2px);
+  border-color: #bfdbfe;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.1);
+}
+
+.cartao-equipe,
+.cartao-pessoa {
+  border: 1px solid #d7e1ee;
+}
+
+.formulario-largo {
+  max-width: 1050px;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+}
+
+.formulario-curto {
+  max-width: 850px;
+}
+
+.subtitulo-formulario h2 {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 20px;
+}
+
+.subtitulo-formulario p {
+  margin: 0;
+  color: #64748b;
+}
+
+.campo-duplo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 18px;
+}
+
+.acoes-formulario,
+.bloco-acoes {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.bloco-acoes {
+  max-width: 1120px;
+  margin-top: 20px;
+}
+
+.despacho-equipe {
+  margin-top: 24px;
+}
+
+.painel-ocorrencia {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 18px;
+  max-width: 980px;
+  margin-top: 8px;
+}
+
+.caixa-info,
+.relatorio-completo,
+.mensagem-centro {
+  border: 1px solid #d7e1ee;
+  border-radius: 10px;
+  padding: 22px;
+  background: #ffffff;
+}
+
+.caixa-info h2 {
+  margin: 0 0 14px;
+  color: #0f172a;
+  font-size: 18px;
+}
+
+.caixa-info p {
+  margin: 10px 0 0;
+  color: #334155;
+}
+
+.caixa-info textarea,
+.relatorio-completo textarea {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 14px;
+  color: #334155;
+  background: #eef6ff;
+  outline: none;
+  resize: vertical;
+}
+
+.painel-centralizado {
+  min-height: 520px;
+}
+
+.mensagem-centro {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 18px;
+  color: #64748b;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.mensagem-centro p {
+  margin: 0;
+  font-size: 18px;
+}
+
+.relatorio-completo {
+  max-width: 850px;
+  display: grid;
+  gap: 18px;
+}
+
+.cabecalho-relatorio {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.cabecalho-relatorio h1 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.cabecalho-relatorio p {
+  margin: 8px 0 0;
+  color: #64748b;
+}
+
+.grade-dados {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.grade-dados article {
+  border-radius: 8px;
+  padding: 14px;
+  background: #f8fbff;
+}
+
+.grade-dados strong,
+.grade-dados span,
+.relatorio-completo label {
+  display: block;
+}
+
+.grade-dados strong,
+.relatorio-completo label {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.grade-dados span {
+  margin-top: 6px;
+  color: #64748b;
+}
+
+@media (max-width: 980px) {
+  .formulario-largo,
+  .painel-ocorrencia,
+  .grade-dados,
+  .campo-duplo {
+    grid-template-columns: 1fr;
+  }
+}

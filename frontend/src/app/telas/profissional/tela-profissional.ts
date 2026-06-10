@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-type TelaProfissionalSelecionada = 'ocorrencias' | 'relatorios';
+type TelaProfissionalSelecionada = 'ocorrencias' | 'detalhe-ocorrencia' | 'aguardando-despacho' | 'relatorios' | 'relatorio-atendimento';
 
 @Component({
   selector: 'app-tela-profissional',
@@ -11,7 +11,7 @@ type TelaProfissionalSelecionada = 'ocorrencias' | 'relatorios';
 })
 export class TelaProfissional {
   telaAtual: TelaProfissionalSelecionada = 'ocorrencias';
-  private readonly telasPermitidas: TelaProfissionalSelecionada[] = ['ocorrencias', 'relatorios'];
+  private readonly telasPermitidas: TelaProfissionalSelecionada[] = ['ocorrencias', 'detalhe-ocorrencia', 'aguardando-despacho', 'relatorios', 'relatorio-atendimento'];
 
   constructor(
     private readonly rota: ActivatedRoute,
