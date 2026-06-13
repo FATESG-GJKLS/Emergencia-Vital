@@ -1,8 +1,10 @@
 package com.gjkls.emergencia.vital.api.models.funcionario;
 
 import jakarta.persistence.*;
+import com.gjkls.emergencia.vital.api.models.equipe.Equipe;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +18,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 @Table(name = "TB_FUNCIONARIOS")
 @Entity
@@ -35,10 +39,12 @@ public class Funcionario implements UserDetails {
     @NotBlank
     @Size(max=20)
     @Column(nullable = false, unique = true)
+    @Pattern(regexp = "^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$", message="CPF mal formatado")
     private String CPF;
 
     @NotBlank
     @Column(nullable = false)
+    @Pattern(regexp = "^[A-Za-z][A-Za-z0-9]*([._-][A-Za-z0-9]+)*@[A-Za-z0-9]+(\\.[A-Za-z]{2,})+$", message="Email mal formatado")
     private String email;
 
     @NotBlank
@@ -55,6 +61,17 @@ public class Funcionario implements UserDetails {
     @NotNull
     @Enumerated(EnumType.STRING)
     StatusTurno statusTurno;
+
+    @ManyToMany
+    @JoinTable(name = "TB_EQUIPES_FUNCIONARIOS",
+        joinColumns = @JoinColumn(name = "funcionario_id"),
+        inverseJoinColumns = @JoinColumn(name = "equipe_id")
+    )
+    private Set<Equipe> equipes = new HashSet<>();
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "equipe_ativa_id")
+    private Equipe equipeAtiva;
 
     @PrePersist
     public void prePersist() {
