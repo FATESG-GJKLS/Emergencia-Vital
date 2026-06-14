@@ -24,63 +24,251 @@
         </section>
 
         <section class="formulario-painel formulario-largo">
-          <div><label for="solicitante">Solicitante</label><input id="solicitante" type="text" placeholder="Nome" /></div>
-          <div><label for="cpf-solicitante">CPF</label><input id="cpf-solicitante" type="text" placeholder="Não sei ou não existe" /></div>
-          <div><label for="telefone-contato">Telefone de contato</label><input id="telefone-contato" type="text" placeholder="(00) 00000-0000" /></div>
-          <div class="campo-grande subtitulo-formulario"><h2>Pacientes</h2><p>Quantidade de pacientes</p></div>
-          <div><label for="paciente">Paciente 01</label><input id="paciente" type="text" placeholder="Não identificado" /></div>
-          <div><label for="data-nascimento">Data nascimento</label><input id="data-nascimento" type="text" placeholder="00/00/0000" /></div>
-          <div><label for="cpf-paciente">CPF</label><input id="cpf-paciente" type="text" placeholder="000.000.000-00" /></div>
-          <div class="campo-grande"><label for="observacao">Observação</label><input id="observacao" type="text" placeholder="Ex: alergia, condição, acompanhamento, sintomas..." /></div>
-          <div class="acoes-formulario campo-grande"><button type="button" (click)="trocarTela('nova-ocorrencia-localizacao')">Prosseguir</button></div>
+          <div class="campo-check">
+            <input id="solicitante-anonimo" type="checkbox" [(ngModel)]="novaOcorrencia.solicitante.anonimo" />
+            <label for="solicitante-anonimo">Solicitante Anônimo</label>
+          </div>
+          <div>
+            <label for="solicitante">Solicitante</label>
+            <input id="solicitante" type="text" placeholder="Nome" [(ngModel)]="novaOcorrencia.solicitante.nome" [disabled]="novaOcorrencia.solicitante.anonimo" />
+          </div>
+          <div>
+            <label for="cpf-solicitante">CPF</label>
+            <input id="cpf-solicitante" type="text" placeholder="000.000.000-00" [(ngModel)]="novaOcorrencia.solicitante.CPF" (input)="formatarCPF($event)" [disabled]="novaOcorrencia.solicitante.anonimo" />
+          </div>
+          <div>
+            <label for="telefone-contato">Telefone de contato</label>
+            <input id="telefone-contato" type="text" placeholder="(62)9-99998888" [(ngModel)]="novaOcorrencia.solicitante.telefone" (input)="formatarTelefone($event)" />
+          </div>
+          <div class="campo-grande subtitulo-formulario">
+            <h2>Pacientes</h2>
+            <div class="acoes-pacientes">
+              <p>Quantidade de pacientes: {{ novaOcorrencia.pacientes.length }}</p>
+              <button type="button" class="btn-adicionar" (click)="adicionarPaciente()">+ Adicionar Paciente</button>
+            </div>
+          </div>
+
+          @for (p of novaOcorrencia.pacientes; track $index) {
+            <div class="bloco-paciente campo-grande">
+              <div class="cabecalho-paciente">
+                <h3>Paciente {{ $index + 1 }}</h3>
+                @if (novaOcorrencia.pacientes.length > 1) {
+                  <button type="button" class="btn-remover" (click)="removerPaciente($index)">Remover</button>
+                }
+              </div>
+              <div class="campos-paciente">
+                <div class="campo-check">
+                  <input [id]="'paciente-anonimo-' + $index" type="checkbox" [(ngModel)]="p.anonimo" />
+                  <label [for]="'paciente-anonimo-' + $index">Paciente Anônimo</label>
+                </div>
+                <div>
+                  <label [for]="'paciente-nome-' + $index">Nome</label>
+                  <input [id]="'paciente-nome-' + $index" type="text" placeholder="Nome do Paciente" [(ngModel)]="p.nome" [disabled]="p.anonimo" />
+                </div>
+                <div>
+                  <label [for]="'paciente-cpf-' + $index">CPF</label>
+                  <input [id]="'paciente-cpf-' + $index" type="text" placeholder="000.000.000-00" [(ngModel)]="p.CPF" (input)="formatarCPF($event)" [disabled]="p.anonimo" />
+                </div>
+                <div class="campo-grande">
+                  <label [for]="'paciente-obs-' + $index">Observação</label>
+                  <input [id]="'paciente-obs-' + $index" type="text" placeholder="Ex: alergia, condição, acompanhamento, sintomas..." [(ngModel)]="p.observacoes" />
+                </div>
+              </div>
+            </div>
+          }
+          <div class="acoes-formulario campo-grande">
+            <button type="button" (click)="trocarTela('nova-ocorrencia-localizacao')">Prosseguir</button>
+          </div>
         </section>
       }
 
       @case ('nova-ocorrencia-localizacao') {
         <section class="cabecalho"><div><h1>Criar nova ocorrência</h1><p>Etapa 2 de 3</p></div></section>
         <section class="formulario-painel formulario-largo">
-          <div class="campo-grande"><label for="descricao">Descrição</label><textarea id="descricao" rows="8"></textarea></div>
-          <div><label for="nivel-urgencia">Nível de urgência</label><select id="nivel-urgencia"><option>Crítico</option><option>Alto</option><option>Médio</option><option>Baixo</option></select></div>
-          <div><label for="localizacao">Localização</label><input id="localizacao" type="text" placeholder="Rua, bairro, número e referência" /></div>
-          <div><label for="orgao-acessado">Órgão acessado</label><select id="orgao-acessado"><option>SAMU</option><option>Bombeiros</option><option>Polícia</option></select></div>
-          <div><label for="bairro">Bairro</label><input id="bairro" type="text" placeholder="Bairro" /></div>
-          <div class="acoes-formulario campo-grande"><button class="secundario" type="button" (click)="trocarTela('nova-ocorrencia')">Voltar</button><button type="button" (click)="trocarTela('nova-ocorrencia-despacho')">Prosseguir</button></div>
+          <div class="campo-grande">
+            <label for="descricao">Descrição</label>
+            <textarea id="descricao" rows="8" [(ngModel)]="novaOcorrencia.descricao"></textarea>
+          </div>
+          <div>
+            <label for="nivel-urgencia">Nível de urgência</label>
+            <select id="nivel-urgencia" [(ngModel)]="novaOcorrencia.gravidade">
+              <option value="ALTA">Alta</option>
+              <option value="MEDIA">Média</option>
+              <option value="BAIXA">Baixa</option>
+            </select>
+          </div>
+          <div class="campo-grande">
+            <label for="localizacao">Localização (Endereço)</label>
+            <input id="localizacao" type="text" placeholder="Rua, número e referência" [(ngModel)]="novaOcorrencia.endereco" />
+          </div>
+          <div>
+            <label for="bairro">Bairro</label>
+            <select id="bairro" [(ngModel)]="novaOcorrencia.bairro">
+              @for (b of bairros; track b.nome) {
+                <option [value]="b.local">{{ b.local }} ({{ b.distancia }}km)</option>
+              }
+            </select>
+          </div>
+          <div class="acoes-formulario campo-grande">
+            <button class="secundario" type="button" (click)="trocarTela('nova-ocorrencia')">Voltar</button>
+            <button type="button" (click)="criarOcorrencia()">Prosseguir para Despacho</button>
+          </div>
         </section>
       }
 
       @case ('nova-ocorrencia-despacho') {
-        <section class="cabecalho"><div><h1>Criar nova ocorrência</h1><p>Etapa 3 de 3</p></div></section>
+        <section class="cabecalho"><div><h1>Criar nova ocorrência</h1><p>Etapa 3 de 3 - Despacho</p></div></section>
         <section class="grade-cartoes despacho-equipe">
-          @for (numero of [1,2,3,4]; track numero) {
-            <button class="cartao-equipe" type="button" (click)="trocarTela('ocorrencias')">
-              <h2>Equipe {{ numero }}</h2>
-              <span class="status disponivel">Disponível</span>
-              <p><strong>Médico:</strong> Nome</p>
-              <p><strong>Atendente:</strong> Nome</p>
-              <p><strong>Ambulância:</strong> Placa</p>
-            </button>
+          @if (equipesDisponiveisParaDespacho.length) {
+            @for (equipe of equipesDisponiveisParaDespacho; track equipe.id) {
+              <button class="cartao-equipe" type="button" (click)="enviarDespacho(equipe.id)">
+                <h2>Equipe {{ equipe.id }}</h2>
+                <span class="status disponivel">{{ formatarStatusEquipe(equipe.status) }}</span>
+                <p><strong>Ambulância:</strong> {{ equipe.ambulanciaInfo || 'Sem vínculo' }}</p>
+                <p><strong>Funcionários:</strong> {{ equipe.nomesFuncionarios?.join(', ') || 'Nenhum alocado' }}</p>
+              </button>
+            }
+          } @else {
+            <p>Nenhuma equipe disponível para despacho no momento.</p>
           }
         </section>
-        <div class="acoes-formulario bloco-acoes"><button class="secundario" type="button" (click)="trocarTela('nova-ocorrencia-localizacao')">Voltar</button><button type="button" (click)="trocarTela('ocorrencias')">Despachar</button></div>
+        <div class="acoes-formulario bloco-acoes">
+          <button class="secundario" type="button" (click)="trocarTela('nova-ocorrencia-localizacao')">Voltar</button>
+        </div>
+      }
+
+      @case ('reforco-despacho') {
+        <section class="cabecalho"><div><h1>Reforço de Despacho</h1><p>Selecione uma equipe adicional para a ocorrência #{{ ocorrenciaSelecionada?.id }}</p></div></section>
+        <section class="grade-cartoes despacho-equipe">
+          @if (equipesDisponiveisParaDespacho.length) {
+            @for (equipe of equipesDisponiveisParaDespacho; track equipe.id) {
+              <button class="cartao-equipe" type="button" (click)="enviarDespacho(equipe.id)">
+                <h2>Equipe {{ equipe.id }}</h2>
+                <span class="status disponivel">{{ formatarStatusEquipe(equipe.status) }}</span>
+                <p><strong>Ambulância:</strong> {{ equipe.ambulanciaInfo || 'Sem vínculo' }}</p>
+                <p><strong>Funcionários:</strong> {{ equipe.nomesFuncionarios?.join(', ') || 'Nenhum alocado' }}</p>
+              </button>
+            }
+          } @else {
+            <p>Nenhuma equipe disponível para despacho no momento.</p>
+          }
+        </section>
+        <div class="acoes-formulario bloco-acoes">
+          <button class="secundario" type="button" (click)="trocarTela('detalhes-ocorrencia')">Voltar</button>
+        </div>
       }
 
       @case ('ocorrencias') {
         <section class="cabecalho">
           <div><h1>Ocorrências preenchidas hoje</h1><p>Lista de ocorrências abertas e acompanhadas pelo atendimento.</p></div>
         </section>
-        <section class="filtros"><button type="button">Todos <strong>25</strong></button><button type="button">Despachados <strong>5</strong></button><button type="button">Finalizados <strong>5</strong></button></section>
+        <section class="filtros">
+          <button type="button" (click)="atualizarFiltro('TODOS')" [class.ativo]="filtroOcorrencia === 'TODOS'">Todos <strong>{{ totalOcorrencias }}</strong></button>
+          <button type="button" (click)="atualizarFiltro('EM_ATENDIMENTO')" [class.ativo]="filtroOcorrencia === 'EM_ATENDIMENTO'">Despachados <strong>{{ totalDespachos }}</strong></button>
+          <button type="button" (click)="atualizarFiltro('CONCLUIDA')" [class.ativo]="filtroOcorrencia === 'CONCLUIDA'">Finalizados <strong>{{ ocorrenciasConcluidas }}</strong></button>
+        </section>
         <section class="cartao-tabela">
-          <input type="search" placeholder="Pesquisar" />
+          <input type="search" placeholder="Pesquisar" (input)="atualizarPesquisa($event)" [value]="termoPesquisa" />
           <table>
-            <thead><tr><th>Id</th><th>Urgência</th><th>Abertura</th><th>Equipe</th><th>Status</th><th>Fechamento</th><th>Relatório</th></tr></thead>
+            <thead><tr><th>Id</th><th>Urgência</th><th>Abertura</th><th>Solicitante</th><th>Status</th><th>Fechamento</th><th>Relatório</th></tr></thead>
             <tbody>
-              <tr><td>00000</td><td><span class="status critico">Crítico</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td><button class="link-tabela" type="button" (click)="trocarTela('ocorrencias')">abrir</button></td></tr>
-              <tr><td>00000</td><td><span class="status alto">Alto</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status despachada">Despachada</span></td><td>13:40</td><td><button class="link-tabela" type="button" (click)="trocarTela('ocorrencias')">abrir</button></td></tr>
-              <tr><td>00000</td><td><span class="status medio">Médio</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td><button class="link-tabela" type="button" (click)="trocarTela('ocorrencias')">abrir</button></td></tr>
-              <tr><td>00000</td><td><span class="status baixo">Baixo</span></td><td>12:15</td><td>Equipe tal tal</td><td><span class="status finalizado">Finalizado</span></td><td>13:40</td><td><button class="link-tabela" type="button" (click)="trocarTela('ocorrencias')">abrir</button></td></tr>
+              @if (ocorrenciasFiltradas.length) {
+                @for (ocorrencia of ocorrenciasFiltradas; track ocorrencia.id) {
+                  <tr>
+                    <td>{{ ocorrencia.id }}</td>
+                    <td><span class="status" [class.critico]="ocorrencia.gravidade === 'ALTA'" [class.alto]="ocorrencia.gravidade === 'MEDIA'" [class.medio]="ocorrencia.gravidade === 'BAIXA'">{{ ocorrencia.gravidade }}</span></td>
+                    <td>{{ formatarDataHora(ocorrencia.dataHoraAbertura) }}</td>
+                    <td>{{ ocorrencia.solicitante.nome }}</td>
+                    <td><span class="status" [class.despachada]="ocorrencia.status === 'ABERTA'" [class.atendimento]="ocorrencia.status === 'EM_ATENDIMENTO'" [class.finalizado]="ocorrencia.status === 'CONCLUIDA'">{{ textoStatusOcorrencia(ocorrencia.status) }}</span></td>
+                    <td>{{ formatarDataHora(ocorrencia.dataHoraEncerramento) }}</td>
+                    <td><button class="link-tabela" type="button" (click)="abrirOcorrencia(ocorrencia)">abrir</button></td>
+                  </tr>
+                }
+              } @else {
+                <tr><td colspan="7">Nenhuma ocorrência encontrada.</td></tr>
+              }
             </tbody>
           </table>
         </section>
+      }
+
+      @case ('detalhes-ocorrencia') {
+        @if (ocorrenciaSelecionada) {
+          <section class="cabecalho">
+            <div>
+              <h1>Ocorrência #{{ ocorrenciaSelecionada.id }}</h1>
+              <p>Detalhes completos da ocorrência selecionada.</p>
+            </div>
+            <div class="acoes">
+              <button class="botao-status" type="button" (click)="trocarTela('reforco-despacho')">Novo Despacho (Reforço)</button>
+              <button class="secundario" type="button" (click)="trocarTela('ocorrencias')">Voltar</button>
+            </div>
+          </section>
+
+          <section class="formulario-painel formulario-largo">
+            <div class="campo-grande subtitulo-formulario"><h2>Dados do Solicitante</h2></div>
+            <div><label>Nome</label><p>{{ ocorrenciaSelecionada.solicitante.nome }}</p></div>
+            <div><label>CPF</label><p>{{ ocorrenciaSelecionada.solicitante.CPF }}</p></div>
+
+            <div class="campo-grande subtitulo-formulario"><h2>Pacientes</h2></div>
+            @for (paciente of ocorrenciaSelecionada.pacientes; track $index) {
+              <div class="bloco-paciente-detalhe">
+                <div><label>Nome</label><p>{{ paciente.anonimo ? 'Anônimo' : paciente.nome }}</p></div>
+                <div><label>CPF</label><p>{{ paciente.anonimo ? 'N/A' : paciente.CPF }}</p></div>
+                <div class="campo-grande"><label>Observação</label><p>{{ paciente.observacoes || 'Sem observações' }}</p></div>
+              </div>
+            }
+
+            <div class="campo-grande subtitulo-formulario"><h2>Informações do Local</h2></div>
+            <div class="campo-grande"><label>Endereço</label><p>{{ ocorrenciaSelecionada.endereco }}</p></div>
+            <div><label>Bairro</label><p>{{ ocorrenciaSelecionada.bairro }}</p></div>
+            <div><label>Gravidade</label><p>{{ ocorrenciaSelecionada.gravidade }}</p></div>
+
+            <div class="campo-grande subtitulo-formulario"><h2>Descrição Técnica</h2></div>
+            <div class="campo-grande"><label>Relato</label><p>{{ ocorrenciaSelecionada.descricao }}</p></div>
+
+            <div class="campo-grande subtitulo-formulario"><h2>Status do Atendimento</h2></div>
+            <div><label>Abertura</label><p>{{ formatarDataHora(ocorrenciaSelecionada.dataHoraAbertura) }}</p></div>
+            <div><label>Encerramento</label><p>{{ formatarDataHora(ocorrenciaSelecionada.dataHoraEncerramento) }}</p></div>
+            <div><label>Status</label><p>{{ textoStatusOcorrencia(ocorrenciaSelecionada.status) }}</p></div>
+
+            @if (despachosDaOcorrenciaSelecionada.length > 0) {
+              <div class="campo-grande subtitulo-formulario"><h2>Despachos Realizados</h2></div>
+              <div class="campo-grande">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Equipe</th>
+                      <th>Ambulância</th>
+                      <th>Despacho</th>
+                      <th>Chegada Local</th>
+                      <th>Finalização</th>
+                      <th>Relatório</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (despacho of despachosDaOcorrenciaSelecionada; track despacho.id) {
+                      <tr>
+                        <td>{{ despacho.equipe.id }}</td>
+                        <td>{{ despacho.ambulancia.placa }}</td>
+                        <td>{{ formatarDataHora(despacho.dataHoraDespacho) }}</td>
+                        <td>{{ formatarDataHora(despacho.dataHoraChegadaLocal) }}</td>
+                        <td>{{ formatarDataHora(despacho.dataHoraFinalizacao) }}</td>
+                        <td>{{ despacho.relatorioFinalizacao || '-' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+
+            @if (podeFinalizar) {
+              <div class="acoes-formulario campo-grande">
+                <button type="button" (click)="finalizarOcorrencia()">Finalizar Ocorrência</button>
+              </div>
+            }
+          </section>
+        }
       }
     }
   </main>
