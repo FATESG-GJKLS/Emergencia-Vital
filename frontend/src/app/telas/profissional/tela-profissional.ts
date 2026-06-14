@@ -20,6 +20,8 @@ export class TelaProfissional {
   despachoSelecionado: DespachoResponseDTO | null = null;
   telaAtual: TelaProfissionalSelecionada = 'ocorrencias';
   relatorioTexto: string = '';
+  filtroDespacho: 'TODOS' | 'ABERTO' | 'FINALIZADO' = 'TODOS';
+  termoPesquisa: string = '';
   private readonly telasPermitidas: TelaProfissionalSelecionada[] = ['ocorrencias', 'detalhe-ocorrencia', 'relatorio-atendimento'];
 
   constructor(
@@ -122,6 +124,33 @@ export class TelaProfissional {
 
   get despachosFinalizados(): number {
     return this.despachos.filter((despacho) => !!despacho.dataHoraFinalizacao).length;
+  }
+
+  get despachosFiltrados(): DespachoResponseDTO[] {
+    return this.despachos.filter((despacho) => {
+      const matchFiltro =
+        this.filtroDespacho === 'TODOS' ||
+        (this.filtroDespacho === 'ABERTO' && !despacho.dataHoraFinalizacao) ||
+        (this.filtroDespacho === 'FINALIZADO' && !!despacho.dataHoraFinalizacao);
+
+      const termo = this.termoPesquisa.toLowerCase();
+      const matchPesquisa =
+        !this.termoPesquisa ||
+        despacho.id.toString().includes(termo) ||
+        despacho.ocorrencia.solicitante.nome.toLowerCase().includes(termo) ||
+        despacho.ocorrencia.descricao.toLowerCase().includes(termo);
+
+      return matchFiltro && matchPesquisa;
+    });
+  }
+
+  atualizarFiltro(filtro: 'TODOS' | 'ABERTO' | 'FINALIZADO'): void {
+    this.filtroDespacho = filtro;
+  }
+
+  atualizarPesquisa(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.termoPesquisa = input.value;
   }
 
   get primeiroDespacho(): DespachoResponseDTO | null {
