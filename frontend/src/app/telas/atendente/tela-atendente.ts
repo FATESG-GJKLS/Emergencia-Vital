@@ -1,20 +1,36 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { OcorrenciaResponseDTO, DespachoResponseDTO, EquipeResponseDTO, AmbulanciaResponseDTO, RegistroOcorrenciaDTO } from '../../modelos/api';
+import {
+  OcorrenciaResponseDTO,
+  DespachoResponseDTO,
+  EquipeResponseDTO,
+  AmbulanciaResponseDTO,
+  RegistroOcorrenciaDTO,
+} from '../../modelos/api';
 import { AutenticacaoService } from '../../servicos/autenticacao.service';
 import { AtendenteService } from '../../servicos/atendente.service';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
-type TelaAtendenteSelecionada = 'nova-ocorrencia' | 'nova-ocorrencia-localizacao' | 'nova-ocorrencia-despacho' | 'ocorrencias' | 'detalhes-ocorrencia' | 'reforco-despacho';
+type TelaAtendenteSelecionada =
+  | 'nova-ocorrencia'
+  | 'nova-ocorrencia-localizacao'
+  | 'nova-ocorrencia-despacho'
+  | 'ocorrencias'
+  | 'detalhes-ocorrencia'
+  | 'reforco-despacho';
 
 @Component({
   selector: 'app-tela-atendente',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, ToastModule],
+  providers: [MessageService],
   templateUrl: './tela-atendente.html',
-  styleUrl: './tela-atendente.scss'
+  styleUrl: './tela-atendente.scss',
 })
 export class TelaAtendente {
+  private messageService: MessageService = inject(MessageService);
   ocorrencias: OcorrenciaResponseDTO[] = [];
   despachos: DespachoResponseDTO[] = [];
   equipes: EquipeResponseDTO[] = [];
@@ -35,7 +51,7 @@ export class TelaAtendente {
     { nome: 'ANTONIO', local: 'Vale Santo Antônio', distancia: 7.0 },
     { nome: 'AZUL', local: 'Setor Serra Azul', distancia: 12.0 },
     { nome: 'UNIVERSITARIO', local: 'Assentamento Universitário', distancia: 16.5 },
-    { nome: 'NOROESTE', local: 'Parque Noroeste', distancia: 22.0 }
+    { nome: 'NOROESTE', local: 'Parque Noroeste', distancia: 22.0 },
   ];
 
   novaOcorrencia = {
@@ -44,17 +60,24 @@ export class TelaAtendente {
     endereco: '',
     bairro: 'CENTRO',
     gravidade: 'MEDIA',
-    descricao: ''
+    descricao: '',
   };
 
-  private readonly telasPermitidas: TelaAtendenteSelecionada[] = ['nova-ocorrencia', 'nova-ocorrencia-localizacao', 'nova-ocorrencia-despacho', 'ocorrencias', 'detalhes-ocorrencia', 'reforco-despacho'];
+  private readonly telasPermitidas: TelaAtendenteSelecionada[] = [
+    'nova-ocorrencia',
+    'nova-ocorrencia-localizacao',
+    'nova-ocorrencia-despacho',
+    'ocorrencias',
+    'detalhes-ocorrencia',
+    'reforco-despacho',
+  ];
 
   constructor(
     private readonly rota: ActivatedRoute,
     private readonly roteador: Router,
     private readonly autenticacaoService: AutenticacaoService,
     private readonly atendenteService: AtendenteService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
   ) {
     if (!this.autenticacaoService.possuiSessao()) {
       this.roteador.navigateByUrl('/');
@@ -97,20 +120,26 @@ export class TelaAtendente {
   formatarCPF(event: any): void {
     let v = event.target.value.replace(/\D/g, '');
     if (v.length > 11) v = v.substring(0, 11);
-    if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-    else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{3})/, "$1.$2.$3");
-    else if (v.length > 3) v = v.replace(/(\d{3})(\d{3})/, "$1.$2");
+
+    if (v.length > 9) {
+      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+    } else if (v.length > 6) {
+      v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+    } else if (v.length > 3) {
+      v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+    }
+
     event.target.value = v;
   }
 
   formatarTelefone(event: any): void {
     let v = event.target.value.replace(/\D/g, '');
-    if (v.length > 11) v = v.substring(0, 11);
+    if (v.length > 11) v = v.substring(0, 10);
 
-    // Formato: (NN)9-NNNNNNNN
-    if (v.length > 10) v = v.replace(/(\d{2})(\d{1})(\d{8})/, "($1)$2-$3");
-    else if (v.length > 3) v = v.replace(/(\d{2})(\d{1})(\d{0,8})/, "($1)$2-$3");
-    else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,1})/, "($1)$2");
+    // Formato: (NN)9NNNN-NNNN
+    if (v.length > 10) v = v.replace(/(\d{2})(\d{5})(\d{4})/, '($1)$2-$3');
+    else if (v.length > 3) v = v.replace(/(\d{2})(\d{0,5})(\d{0,4})/, '($1)$2-$3');
+    else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,1})/, '($1)$2');
 
     event.target.value = v;
   }
@@ -126,7 +155,17 @@ export class TelaAtendente {
   }
 
   get equipesDisponiveisParaDespacho(): EquipeResponseDTO[] {
-    return this.equipes.filter(e => e.status === 'Disponível' || (e.status as any) === 'DISPONIVEL');
+    if (!this.ocorrenciaSelecionada) return [];
+    if (this.ocorrenciaSelecionada.gravidade === 'ALTA') {
+      return this.equipes.filter(
+        (e) =>
+          (e.status === 'Disponível' || (e.status as any) === 'DISPONIVEL') &&
+          e.ambulanciaInfo?.includes('Unidade de Suporte Avançado'),
+      );
+    }
+    return this.equipes.filter(
+      (e) => e.status === 'Disponível' || (e.status as any) === 'DISPONIVEL',
+    );
   }
 
   criarOcorrencia(): void {
@@ -141,7 +180,7 @@ export class TelaAtendente {
     }
 
     // Tratar pacientes anônimos
-    dadosParaEnviar.pacientes.forEach(p => {
+    dadosParaEnviar.pacientes.forEach((p) => {
       if (p.anonimo) {
         p.nome = 'Anônimo';
         p.CPF = null as any;
@@ -153,59 +192,95 @@ export class TelaAtendente {
         this.ocorrencias.push(ocorrencia);
         this.ocorrenciaSelecionada = ocorrencia;
         this.trocarTela('nova-ocorrencia-despacho');
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Ocorrencia criada com sucesso!',
+        });
         this.cdr.detectChanges();
       },
       error: (err: any) => {
         alert('Erro ao criar ocorrência: ' + (err.error?.message || err.message));
         this.cdr.detectChanges();
-      }
+      },
     });
   }
 
   enviarDespacho(equipeId: number): void {
     if (!this.ocorrenciaSelecionada) return;
 
-    const temDespacho = this.despachos.some(d => d.ocorrencia.id === this.ocorrenciaSelecionada!.id);
+    const temDespacho = this.despachos.some(
+      (d) => d.ocorrencia.id === this.ocorrenciaSelecionada!.id,
+    );
     const tipoDespacho = temDespacho ? 'REFORCO' : 'INICIAL';
 
-    this.atendenteService.enviarDespacho({
-      ocorrenciaId: this.ocorrenciaSelecionada.id,
-      equipeId: equipeId,
-      tipoDespacho: tipoDespacho
-    }).subscribe({
-      next: (despacho: DespachoResponseDTO) => {
-        this.despachos.push(despacho);
+    this.atendenteService
+      .enviarDespacho({
+        ocorrenciaId: this.ocorrenciaSelecionada.id,
+        equipeId: equipeId,
+        tipoDespacho: tipoDespacho,
+      })
+      .subscribe({
+        next: (despacho: DespachoResponseDTO) => {
+          this.despachos.push(despacho);
 
-        // Recarregar dados para garantir que os status (equipe, ambulância, ocorrência) estejam atualizados
-        this.atendenteService.listarEquipes().subscribe(equipes => {
-          this.equipes = equipes;
-          this.cdr.detectChanges();
-        });
-        this.atendenteService.listarAmbulancias().subscribe(ambulancias => {
-          this.ambulancias = ambulancias;
-          this.cdr.detectChanges();
-        });
-        this.atendenteService.listarOcorrencias().subscribe(ocorrencias => {
-          this.ocorrencias = ocorrencias;
-          this.cdr.detectChanges();
-        });
+          // Recarregar dados para garantir que os status (equipe, ambulância, ocorrência) estejam atualizados
+          this.atendenteService.listarEquipes().subscribe((equipes) => {
+            this.equipes = equipes;
+            this.cdr.detectChanges();
+          });
+          this.atendenteService.listarAmbulancias().subscribe((ambulancias) => {
+            this.ambulancias = ambulancias;
+            this.cdr.detectChanges();
+          });
+          this.atendenteService.listarOcorrencias().subscribe((ocorrencias) => {
+            this.ocorrencias = ocorrencias;
+            this.cdr.detectChanges();
+          });
 
-        alert('Despacho enviado com sucesso!');
-        if (this.telaAtual === 'reforco-despacho') {
-          this.abrirOcorrencia(this.ocorrenciaSelecionada!);
-        } else {
-          this.trocarTela('ocorrencias');
-        }
-        this.cdr.detectChanges();
-      },
-      error: (err: any) => {
-        alert('Erro ao enviar despacho: ' + (err.error?.message || err.message));
-        this.cdr.detectChanges();
-      }
-    });
+          alert('Despacho enviado com sucesso!');
+          if (this.telaAtual === 'reforco-despacho') {
+            this.abrirOcorrencia(this.ocorrenciaSelecionada!);
+          } else {
+            this.trocarTela('ocorrencias');
+          }
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => {
+          alert('Erro ao enviar despacho: ' + (err.error?.message || err.message));
+          this.cdr.detectChanges();
+        },
+      });
   }
 
   trocarTela(tela: TelaAtendenteSelecionada): void {
+    if (tela == 'nova-ocorrencia-localizacao') {
+      const dadosParaEnviar: RegistroOcorrenciaDTO = JSON.parse(
+        JSON.stringify(this.novaOcorrencia),
+      );
+      if (!dadosParaEnviar.solicitante.anonimo && dadosParaEnviar.solicitante.nome.trim() === '') {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Aviso',
+          sticky: true,
+          styleClass: 'custom-toast',
+          contentStyleClass: 'custom-toast-content',
+          detail: 'Solicitante com nome vazio deve ser marcado como anônimo.',
+        });
+        return;
+      }
+      if (dadosParaEnviar.pacientes.some((p) => !p.anonimo && p.nome.trim() === '')) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Aviso',
+          sticky: true,
+          styleClass: 'custom-toast',
+          contentStyleClass: 'custom-toast-content',
+          detail: 'Paciente com nome vazio deve ser marcado como anônimo.',
+        });
+        return;
+      }
+    }
     this.roteador.navigateByUrl(`/atendente/${tela}`);
   }
 
@@ -214,13 +289,14 @@ export class TelaAtendente {
   }
 
   get totalDespachos(): number {
-    return this.ocorrencias.filter(o => o.status === 'EM_ATENDIMENTO').length;
+    return this.ocorrencias.filter((o) => o.status === 'EM_ATENDIMENTO').length;
   }
 
   get ocorrenciasFiltradas(): OcorrenciaResponseDTO[] {
-    return this.ocorrencias.filter(o => {
+    return this.ocorrencias.filter((o) => {
       const matchFiltro = this.filtroOcorrencia === 'TODOS' || o.status === this.filtroOcorrencia;
-      const matchPesquisa = !this.termoPesquisa ||
+      const matchPesquisa =
+        !this.termoPesquisa ||
         o.id.toString().includes(this.termoPesquisa.toLowerCase()) ||
         o.solicitante.nome.toLowerCase().includes(this.termoPesquisa.toLowerCase()) ||
         o.descricao.toLowerCase().includes(this.termoPesquisa.toLowerCase());
@@ -295,7 +371,9 @@ export class TelaAtendente {
 
   abrirOcorrencia(ocorrencia: OcorrenciaResponseDTO) {
     this.ocorrenciaSelecionada = ocorrencia;
-    this.despachosDaOcorrenciaSelecionada = this.despachos.filter(d => d.ocorrencia.id === ocorrencia.id);
+    this.despachosDaOcorrenciaSelecionada = this.despachos.filter(
+      (d) => d.ocorrencia.id === ocorrencia.id,
+    );
     this.trocarTela('detalhes-ocorrencia');
   }
 
@@ -304,7 +382,7 @@ export class TelaAtendente {
       return false;
     }
 
-    return this.despachosDaOcorrenciaSelecionada.every(d => d.dataHoraFinalizacao !== null);
+    return this.despachosDaOcorrenciaSelecionada.every((d) => d.dataHoraFinalizacao !== null);
   }
 
   finalizarOcorrencia(): void {
@@ -313,7 +391,7 @@ export class TelaAtendente {
     this.atendenteService.encerrarOcorrencia(this.ocorrenciaSelecionada.id).subscribe({
       next: (ocorrenciaAtualizada) => {
         this.ocorrenciaSelecionada = ocorrenciaAtualizada;
-        const index = this.ocorrencias.findIndex(o => o.id === ocorrenciaAtualizada.id);
+        const index = this.ocorrencias.findIndex((o) => o.id === ocorrenciaAtualizada.id);
         if (index !== -1) {
           this.ocorrencias[index] = ocorrenciaAtualizada;
         }
@@ -323,7 +401,7 @@ export class TelaAtendente {
       error: (err) => {
         alert('Erro ao finalizar ocorrência: ' + (err.error?.message || err.message));
         this.cdr.detectChanges();
-      }
+      },
     });
   }
 

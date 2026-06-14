@@ -1,9 +1,11 @@
+<p-toast/>
 <div class="tela-sistema">
+
   <aside class="barra-lateral">
     <div class="marca-menor">
       <span class="icone-menor"></span>
       <div>
-        <strong>Nome da Empresa</strong>
+        <strong>Emergência Vital</strong>
         <small>Sistema de Atendimento</small>
       </div>
     </div>
@@ -11,11 +13,10 @@
       <a routerLink="/atendente/nova-ocorrencia" [class.ativo]="telaAtual === 'nova-ocorrencia' || telaAtual === 'nova-ocorrencia-localizacao' || telaAtual === 'nova-ocorrencia-despacho'">Nova Ocorrência</a>
       <a routerLink="/atendente/ocorrencias" [class.ativo]="telaAtual === 'ocorrencias'">Ocorrências</a>
     </nav>
-    <button class="usuario" type="button" (click)="sair()">Atendente Fulano</button>
+    <button class="usuario" type="button" (click)="sair()">Deslogar</button>
   </aside>
 
   <main class="conteudo">
-    <header class="topo"><span>Horário de trabalho restante</span><strong>08:00</strong></header>
 
     @switch (telaAtual) {
       @case ('nova-ocorrencia') {
@@ -38,7 +39,7 @@
           </div>
           <div>
             <label for="telefone-contato">Telefone de contato</label>
-            <input id="telefone-contato" type="text" placeholder="(62)9-99998888" [(ngModel)]="novaOcorrencia.solicitante.telefone" (input)="formatarTelefone($event)" />
+            <input id="telefone-contato" type="text" placeholder="(62)99999-8888" [(ngModel)]="novaOcorrencia.solicitante.telefone" (input)="formatarTelefone($event)" />
           </div>
           <div class="campo-grande subtitulo-formulario">
             <h2>Pacientes</h2>
@@ -111,7 +112,7 @@
           </div>
           <div class="acoes-formulario campo-grande">
             <button class="secundario" type="button" (click)="trocarTela('nova-ocorrencia')">Voltar</button>
-            <button type="button" (click)="criarOcorrencia()">Prosseguir para Despacho</button>
+            <button type="button" (click)="criarOcorrencia()">Criar Ocorrência e Enviar Despacho</button>
           </div>
         </section>
       }
@@ -200,7 +201,7 @@
               <p>Detalhes completos da ocorrência selecionada.</p>
             </div>
             <div class="acoes">
-              <button class="botao-status" type="button" (click)="trocarTela('reforco-despacho')">Novo Despacho (Reforço)</button>
+              <button class="botao-status" type="button" (click)="trocarTela('reforco-despacho')">Novo Despacho</button>
               <button class="secundario" type="button" (click)="trocarTela('ocorrencias')">Voltar</button>
             </div>
           </section>
