@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,9 +28,11 @@ public class Solicitante {
     private String nome;
     
     @Column(nullable = true)
+    @Pattern(regexp = "^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$", message="CPF mal formatado")
     private String CPF;
 
     @Column(nullable = true)
+    @Pattern(regexp = "^\\([0-9]{2}\\)9[0-9]{4}-[0-9]{4}$", message="Telefone mal formatado")
     private String telefone;
 
     @Column(nullable = false)

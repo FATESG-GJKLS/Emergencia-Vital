@@ -17,9 +17,15 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "TB_OCORRENCIAS")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Ocorrencia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,6 +65,9 @@ public class Ocorrencia {
 
     @PrePersist
     public void prePersist() {
+        if (this.dataHoraAbertura == null) {
+            this.dataHoraAbertura = LocalDateTime.now();
+        }
         if (this.status == null) {
             this.status = StatusOcorrencia.ABERTA;
         }

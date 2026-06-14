@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,7 @@ public class Ambulancia {
 
     @NotBlank
     @Column(nullable = false)
+    @Pattern(regexp = "^[A-Z]{3}[0-9][A-Z][0-9]{2}$", message="Placa mal formatada")
     private String placa;
 
     @Enumerated(EnumType.STRING)
