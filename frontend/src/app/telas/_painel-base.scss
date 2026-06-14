@@ -110,6 +110,11 @@ nav a:hover {
   justify-content: space-between;
   gap: 18px;
   align-items: flex-start;
+
+  .acoes {
+    display: flex;
+    gap: 12px;
+  }
 }
 
 .cabecalho h1 {
@@ -225,7 +230,7 @@ tr:last-child td {
 .baixo { background: #bbf7d0; color: #15803d; }
 .despachada,
 .medio { background: #fef08a; color: #854d0e; }
-.atendimento,
+.atendimento {background: #c0ff05; color: #000000; }
 .critico { background: #fecaca; color: #dc2626; }
 .indisponivel { background: #cbd5e1; color: #475569; }
 .alto { background: #fed7aa; color: #c2410c; }
@@ -537,7 +542,8 @@ button {
 .acoes-formulario button,
 .bloco-acoes button,
 .cabecalho-relatorio button,
-.mensagem-centro button {
+.mensagem-centro button,
+.botao-status {
   border: 0;
   border-radius: 8px;
   padding: 12px 18px;
@@ -551,7 +557,8 @@ button {
 .acoes-formulario button:hover,
 .bloco-acoes button:hover,
 .cabecalho-relatorio button:hover,
-.mensagem-centro button:hover {
+.mensagem-centro button:hover,
+.botao-status:hover {
   background: #1d4ed8;
 }
 
@@ -584,12 +591,59 @@ button {
 }
 
 .filtros button:first-child {
+  /* background: #eaf2ff; */
+}
+
+.filtros button.ativo {
   background: #eaf2ff;
+  border-color: #2563eb;
+  color: #1d4ed8;
+  font-weight: 800;
 }
 
 .filtros button:hover {
   border-color: #bfdbfe;
   background: #eff6ff;
+}
+
+.cartao-equipe {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  .acoes-cartao {
+    padding: 10px 15px 0;
+    display: flex;
+    justify-content: flex-end;
+    z-index: 2;
+
+    .botao-status {
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: auto;
+      height: auto;
+      min-width: unset;
+
+      &:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+    }
+  }
+
+  .conteudo-clicavel {
+    padding: 0 20px 20px;
+    flex: 1;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .cartao-atalho,
@@ -629,15 +683,121 @@ button {
   max-width: 850px;
 }
 
+.subtitulo-formulario {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 12px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
 .subtitulo-formulario h2 {
-  margin: 0 0 8px;
-  color: #0f172a;
-  font-size: 20px;
+  margin: 0;
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .subtitulo-formulario p {
   margin: 0;
   color: #64748b;
+  font-size: 14px;
+}
+
+.acoes-pacientes {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-adicionar {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-adicionar:hover {
+  background: #1d4ed8;
+}
+
+.bloco-paciente {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 20px;
+  background: #fcfdfe;
+}
+
+.bloco-paciente-detalhe {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  padding: 16px;
+  background: #f8fafc;
+  grid-column: 1 / -1;
+  margin-bottom: 12px;
+}
+
+.cabecalho-paciente {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px dashed #cbd5e1;
+  padding-bottom: 8px;
+}
+
+.cabecalho-paciente h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #334155;
+}
+
+.btn-remover {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.campos-paciente {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.campo-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  grid-column: 1 / -1;
+  margin-bottom: 4px;
+}
+
+.campo-check input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.campo-check label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: 600;
 }
 
 .campo-duplo {
@@ -661,6 +821,19 @@ button {
 
 .despacho-equipe {
   margin-top: 24px;
+}
+
+.item-paciente-profissional {
+  padding: 12px;
+  border-bottom: 1px solid #f1f5f9;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  p {
+    margin: 4px 0;
+  }
 }
 
 .painel-ocorrencia {
