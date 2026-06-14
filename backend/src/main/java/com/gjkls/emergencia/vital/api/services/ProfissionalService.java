@@ -34,7 +34,7 @@ public class ProfissionalService {
             return List.of();
         }
 
-        return despachoRepository.findByEquipeId(equipeAtiva.getId()).stream().map(AtendenteService::toDespachoResponse)
+        return despachoRepository.findByEquipeIdOrderByDataHoraDespachoDesc(equipeAtiva.getId()).stream().map(AtendenteService::toDespachoResponse)
                 .toList();
     }
 

@@ -8,6 +8,8 @@ public record EquipeResponseDTO(
         Long id,
         StatusEquipe status,
         Long ambulanciaId,
-        List<Long> funcionarioIds
+        String ambulanciaInfo,
+        List<Long> funcionarioIds,
+        List<String> nomesFuncionarios
 ) {
 }

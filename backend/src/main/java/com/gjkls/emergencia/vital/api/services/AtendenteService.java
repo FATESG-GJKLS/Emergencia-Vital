@@ -25,6 +25,7 @@ import com.gjkls.emergencia.vital.api.models.ocorrencia.Ocorrencia;
 import com.gjkls.emergencia.vital.api.models.ocorrencia.Paciente;
 import com.gjkls.emergencia.vital.api.models.ocorrencia.Solicitante;
 import com.gjkls.emergencia.vital.api.models.ocorrencia.StatusOcorrencia;
+import com.gjkls.emergencia.vital.api.repository.AmbulanciaRepository;
 import com.gjkls.emergencia.vital.api.repository.DespachoRepository;
 import com.gjkls.emergencia.vital.api.repository.OcorrenciaRepository;
 import com.gjkls.emergencia.vital.api.repository.EquipeRepository;
@@ -34,12 +35,14 @@ public class AtendenteService {
     private final OcorrenciaRepository ocorrenciaRepository;
     private final DespachoRepository despachoRepository;
     private final EquipeRepository equipeRepository;
+    private final AmbulanciaRepository ambulanciaRepository;
 
     AtendenteService(OcorrenciaRepository ocorrenciaRepository, DespachoRepository despachoRepository,
-            EquipeRepository equipeRepository) {
+            EquipeRepository equipeRepository, AmbulanciaRepository ambulanciaRepository) {
         this.ocorrenciaRepository = ocorrenciaRepository;
         this.despachoRepository = despachoRepository;
         this.equipeRepository = equipeRepository;
+        this.ambulanciaRepository = ambulanciaRepository;
     }
 
     @Transactional
@@ -111,7 +114,7 @@ public class AtendenteService {
     }
 
     public List<OcorrenciaResponseDTO> listarOcorrencias() {
-        return ocorrenciaRepository.findAll().stream()
+        return ocorrenciaRepository.findAllByOrderByDataHoraAberturaDesc().stream()
                 .map(AtendenteService::toOcorrenciaResponse)
                 .collect(Collectors.toList());
     }
@@ -135,16 +138,24 @@ public class AtendenteService {
         if (equipe == null) {
             return null;
         }
+        String ambulanciaInfo = equipe.getAmbulancia() != null 
+            ? equipe.getAmbulancia().getPlaca() + " - " + equipe.getAmbulancia().getModelo() 
+            : null;
         return new EquipeResponseDTO(
                 equipe.getId(),
                 equipe.getStatus(),
                 equipe.getAmbulancia() != null ? equipe.getAmbulancia().getId() : null,
+                ambulanciaInfo,
                 equipe.getFuncionarios() != null
                         ? equipe.getFuncionarios().stream().map(f -> f.getId()).collect(Collectors.toList())
+                        : List.of(),
+                equipe.getFuncionarios() != null
+                        ? equipe.getFuncionarios().stream().map(f -> f.getNome()).collect(Collectors.toList())
                         : List.of());
     }
 
     public static DespachoResponseDTO toDespachoResponse(Despacho despacho) {
+        if (despacho == null) return null;
         Ocorrencia ocorrencia = despacho.getOcorrencia();
         Equipe equipe = despacho.getEquipe();
 
@@ -223,7 +234,7 @@ public class AtendenteService {
     }
 
     public List<DespachoResponseDTO> listarDespachos() {
-        return despachoRepository.findAll().stream()
+        return despachoRepository.findAllByOrderByDataHoraDespachoDesc().stream()
                 .map(d -> {
                     Ocorrencia ocorrencia = d.getOcorrencia();
                     if (ocorrencia == null) {
@@ -233,5 +244,15 @@ public class AtendenteService {
                 })
                 .filter(o -> o != null)
                 .collect(Collectors.toList());
+    }
+
+    public List<EquipeResponseDTO> listarEquipes() {
+        return equipeRepository.findAll().stream()
+                .map(AtendenteService::toEquipeResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<Ambulancia> listarAmbulancias() {
+        return ambulanciaRepository.findAll();
     }
 }

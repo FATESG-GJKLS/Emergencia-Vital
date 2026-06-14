@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.Customizer;
 
 
 @Configuration
@@ -22,9 +23,11 @@ public class ConfiguracoesDeSeguranca {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, FiltroDeSeguranca filtroDeSeguranca) throws Exception {
         return http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers("/api/gestor/**").hasRole("GESTOR")
                         .requestMatchers("/api/atendente/**").hasRole("ATENDENTE")

@@ -3,7 +3,6 @@ package com.gjkls.emergencia.vital.api.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +16,6 @@ import com.gjkls.emergencia.vital.api.services.ProfissionalService;
 
 @RestController
 @RequestMapping("/api/profissional")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ProfissionalController {
     private final ProfissionalService profissionalService;
 
