@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/gestor")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class GestorController {
 
 	private final GestorService gestorService;
