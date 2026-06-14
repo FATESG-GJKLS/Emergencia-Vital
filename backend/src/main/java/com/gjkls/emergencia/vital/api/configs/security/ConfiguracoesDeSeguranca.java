@@ -28,7 +28,7 @@ public class ConfiguracoesDeSeguranca {
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers("/api/gestor/**").hasRole("GESTOR")
                         .requestMatchers("/api/atendente/**").hasRole("ATENDENTE")
-                        .requestMatchers("/api/funcionario/**").hasRole("PROFISSIONAIS_DA_SAUDE")
+                        .requestMatchers("/api/profissional/**").hasRole("PROFISSIONAIS_DA_SAUDE")
                         .anyRequest().hasRole("GESTOR")
                 )
                 .addFilterBefore(filtroDeSeguranca, UsernamePasswordAuthenticationFilter.class)

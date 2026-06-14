@@ -57,7 +57,7 @@ public class AtendenteService {
         ocorrencia.setSolicitante(toSolicitante(dto.solicitante()));
         ocorrencia.setPacientes(dto.pacientes() == null ? List.of()
                 : dto.pacientes().stream()
-                        .map(this::toPaciente)
+                        .map(AtendenteService::toPaciente)
                         .collect(Collectors.toList()));
 
         return toOcorrenciaResponse(ocorrenciaRepository.save(ocorrencia));
@@ -71,7 +71,7 @@ public class AtendenteService {
 
         Ocorrencia ocorrencia = ocorrenciaRepository.findById(dto.ocorrenciaId())
                 .orElseThrow(() -> new IllegalArgumentException("Ocorrência não encontrada."));
-        if (ocorrencia.getStatus() != StatusOcorrencia.ABERTA) {
+        if (ocorrencia.getStatus() == StatusOcorrencia.CONCLUIDA) {
             throw new IllegalStateException("A ocorrência precisa estar em aberto para receber um despacho.");
         }
 
@@ -112,11 +112,11 @@ public class AtendenteService {
 
     public List<OcorrenciaResponseDTO> listarOcorrencias() {
         return ocorrenciaRepository.findAll().stream()
-                .map(this::toOcorrenciaResponse)
+                .map(AtendenteService::toOcorrenciaResponse)
                 .collect(Collectors.toList());
     }
 
-    private OcorrenciaResponseDTO toOcorrenciaResponse(Ocorrencia ocorrencia) {
+    public static OcorrenciaResponseDTO toOcorrenciaResponse(Ocorrencia ocorrencia) {
         return new OcorrenciaResponseDTO(
                 ocorrencia.getId(),
                 ocorrencia.getDataHoraAbertura(),
@@ -127,11 +127,11 @@ public class AtendenteService {
                 ocorrencia.getStatus(),
                 toSolicitanteDTO(ocorrencia.getSolicitante()),
                 ocorrencia.getPacientes() == null ? List.of()
-                        : ocorrencia.getPacientes().stream().map(this::toPacienteDTO).collect(Collectors.toList()),
+                        : ocorrencia.getPacientes().stream().map(AtendenteService::toPacienteDTO).collect(Collectors.toList()),
                 ocorrencia.getDescricao());
     }
 
-    private EquipeResponseDTO toEquipeResponse(Equipe equipe) {
+    public static EquipeResponseDTO toEquipeResponse(Equipe equipe) {
         if (equipe == null) {
             return null;
         }
@@ -144,7 +144,7 @@ public class AtendenteService {
                         : List.of());
     }
 
-    private DespachoResponseDTO toDespachoResponse(Despacho despacho) {
+    public static DespachoResponseDTO toDespachoResponse(Despacho despacho) {
         Ocorrencia ocorrencia = despacho.getOcorrencia();
         Equipe equipe = despacho.getEquipe();
 
@@ -162,7 +162,7 @@ public class AtendenteService {
                         : null);
     }
 
-    private Solicitante toSolicitante(RegistroSolicitanteDTO dto) {
+    public static Solicitante toSolicitante(RegistroSolicitanteDTO dto) {
         Solicitante solicitante = new Solicitante();
         solicitante.setNome(dto.nome());
         solicitante.setCPF(dto.CPF());
@@ -171,7 +171,7 @@ public class AtendenteService {
         return solicitante;
     }
 
-    private RegistroSolicitanteDTO toSolicitanteDTO(Solicitante solicitante) {
+    public static RegistroSolicitanteDTO toSolicitanteDTO(Solicitante solicitante) {
         if (solicitante == null) {
             return null;
         }
@@ -182,7 +182,7 @@ public class AtendenteService {
                 solicitante.getAnonimo());
     }
 
-    private Paciente toPaciente(RegistroPacienteDTO dto) {
+    public static Paciente toPaciente(RegistroPacienteDTO dto) {
         Paciente paciente = new Paciente();
         paciente.setNome(dto.nome());
         paciente.setCPF(dto.CPF());
@@ -191,7 +191,7 @@ public class AtendenteService {
         return paciente;
     }
 
-    private RegistroPacienteDTO toPacienteDTO(Paciente paciente) {
+    public static RegistroPacienteDTO toPacienteDTO(Paciente paciente) {
         return new RegistroPacienteDTO(
                 paciente.getNome(),
                 paciente.getCPF(),

@@ -12,4 +12,5 @@ public interface DespachoRepository extends JpaRepository<Despacho, Long> {
     boolean existsByOcorrenciaIdAndTipoDespacho(Long ocorrenciaId, TipoDespacho inicial);
 
     List<Despacho> findByOcorrenciaId(Long idOcorrencia);
+    List<Despacho> findByEquipeId(Long id);
 }
