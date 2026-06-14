@@ -1,0 +1,103 @@
+<div class="tela-sistema">
+  <aside class="barra-lateral">
+    <div class="marca-menor">
+      <span class="icone-menor"></span>
+      <div>
+        <strong>Emergência Vital</strong>
+        <small>Sistema de Atendimento</small>
+      </div>
+    </div>
+    <nav>
+      <a routerLink="/profissional/ocorrencias" [class.ativo]="telaAtual === 'ocorrencias' || telaAtual === 'detalhe-ocorrencia'">Despachos</a>
+    </nav>
+    <button class="usuario" type="button" (click)="sair()">Profissional</button>
+  </aside>
+
+  <main class="conteudo">
+    <header class="topo"><span>Horário de trabalho restante</span><strong>08:00</strong></header>
+
+    @switch (telaAtual) {
+      @case ('ocorrencias') {
+        <section class="cabecalho"><div><h1>Despachos atribuídos</h1><p>Acompanhamento de despachos para o profissional de saúde.</p></div></section>
+        <section class="filtros"><button type="button">Todos <strong>{{ totalDespachos }}</strong></button><button type="button">Em atendimento <strong>{{ despachosAbertos }}</strong></button><button type="button">Finalizados <strong>{{ despachosFinalizados }}</strong></button></section>
+        <section class="cartao-tabela">
+          <input type="search" placeholder="Pesquisar" />
+          <table>
+            <thead><tr><th>Id</th><th>Urgência</th><th>Despacho</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody>
+              @if (despachos.length) {
+                @for (despacho of despachos; track despacho.id) {
+                  <tr>
+                    <td>{{ despacho.id }}</td>
+                    <td><span class="status" [class.critico]="despacho.ocorrencia.gravidade === 'ALTA'" [class.alto]="despacho.ocorrencia.gravidade === 'MEDIA'" [class.medio]="despacho.ocorrencia.gravidade === 'BAIXA'">{{ despacho.ocorrencia.gravidade }}</span></td>
+                    <td>{{ formatarDataHora(despacho.dataHoraDespacho) }}</td>
+                    <td><span class="status" [class.atendimento]="despacho.dataHoraChegadaLocal && !despacho.dataHoraFinalizacao" [class.finalizado]="!!despacho.dataHoraFinalizacao" [class.despachada]="!despacho.dataHoraChegadaLocal">{{ textoStatusDespacho(despacho) }}</span></td>
+                    <td>
+                      <div style="display: flex; gap: 8px;">
+                        <button class="link-tabela" type="button" (click)="abrirDespacho(despacho)">detalhes</button>
+                        @if (!despacho.dataHoraChegadaLocal && !despacho.dataHoraFinalizacao) {
+                          <button class="link-tabela" type="button" (click)="informarChegada(despacho)">cheguei</button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              } @else {
+                <tr><td colspan="5">Nenhum despacho encontrado.</td></tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      }
+
+      @case ('detalhe-ocorrencia') {
+        <section class="painel-ocorrencia">
+          @if (despachoSelecionado) {
+            <div class="caixa-info"><h2>Equipe: {{ despachoSelecionado.equipe.id }}</h2><p><strong>Status:</strong> {{ despachoSelecionado.equipe.status }}</p></div>
+            <div class="caixa-info"><h2>Ambulância</h2><p>{{ despachoSelecionado.ambulancia.placa }} - {{ despachoSelecionado.ambulancia.modelo }}</p></div>
+            <div class="grade-dados">
+              <article><strong>Ocorrência</strong><span>{{ despachoSelecionado.ocorrencia.id }}</span></article>
+              <article><strong>Solicitante</strong><span>{{ despachoSelecionado.ocorrencia.solicitante.nome }}</span></article>
+              <article><strong>Status</strong><span>{{ despachoSelecionado.ocorrencia.status }}</span></article>
+              <article><strong>Endereço</strong><span>{{ despachoSelecionado.ocorrencia.endereco }}</span></article>
+            </div>
+            <div class="caixa-info campo-grande"><h2>Descrição da Ocorrência</h2><textarea rows="4" readonly>{{ despachoSelecionado.ocorrencia.descricao }}</textarea></div>
+
+            <div class="caixa-info campo-grande">
+              <h2>Lista de Pacientes</h2>
+              @for (paciente of despachoSelecionado.ocorrencia.pacientes; track $index) {
+                <div class="item-paciente-profissional">
+                  <p><strong>Nome:</strong> {{ paciente.anonimo ? 'Anônimo' : paciente.nome }}</p>
+                  <p><strong>Observação:</strong> {{ paciente.observacoes || 'Sem observações' }}</p>
+                </div>
+              }
+            </div>
+          } @else {
+            <p>Nenhum despacho disponível para exibir detalhes.</p>
+          }
+          <div class="acoes-formulario campo-grande">
+            @if (despachoSelecionado && !despachoSelecionado.dataHoraFinalizacao) {
+              @if (!despachoSelecionado.dataHoraChegadaLocal) {
+                <button type="button" (click)="informarChegada(despachoSelecionado)">Informar Chegada</button>
+              } @else {
+                <button type="button" (click)="prepararFinalizacao()">Finalizar e enviar relatório</button>
+              }
+            }
+            <button class="secundario" type="button" (click)="trocarTela('ocorrencias')">Voltar</button>
+          </div>
+        </section>
+      }
+
+      @case ('relatorio-atendimento') {
+        <section class="relatorio-completo">
+          <div class="cabecalho-relatorio"><div><h1>Relatório de atendimento</h1><p>{{ despachoSelecionado ? 'Despacho ' + despachoSelecionado.id : 'Nenhuma ocorrência selecionada' }}</p></div></div>
+          <textarea rows="10" placeholder="Descreva o atendimento realizado..." [(ngModel)]="relatorioTexto"></textarea>
+          <div class="acoes-formulario">
+            <button type="button" (click)="finalizarRelatorio()">Enviar relatório e finalizar</button>
+            <button class="secundario" type="button" (click)="trocarTela('detalhe-ocorrencia')">Voltar</button>
+          </div>
+        </section>
+      }
+    }
+  </main>
+</div>
