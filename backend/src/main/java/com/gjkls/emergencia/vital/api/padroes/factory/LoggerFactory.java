@@ -6,7 +6,7 @@ import com.gjkls.emergencia.vital.api.padroes.adapter.TipoLogging;
 import com.gjkls.emergencia.vital.api.padroes.adapter.TxtLogging;
 
 public class LoggerFactory {
-    private static TipoLogging tipo;
+    private static TipoLogging tipo = TipoLogging.LOG4J;
     private static ILogging loggerSingleton;
 
     public static ILogging getLogger() {
