@@ -72,7 +72,6 @@ public class GestorController {
 		return ResponseEntity.ok(gestorService.alterarStatusEquipe(id));
 	}
 
-	// TODO: Endpoint de dashboards
 	@GetMapping("/ocorrencias")
 	public ResponseEntity<List<OcorrenciaResponseDTO>> listarOcorrencias() {
 		return ResponseEntity.ok(gestorService.listarOcorrencias());

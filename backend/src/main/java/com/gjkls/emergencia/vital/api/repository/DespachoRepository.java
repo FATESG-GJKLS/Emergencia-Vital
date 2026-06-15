@@ -1,5 +1,6 @@
 package com.gjkls.emergencia.vital.api.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,6 @@ public interface DespachoRepository extends JpaRepository<Despacho, Long> {
     List<Despacho> findByOcorrenciaId(Long idOcorrencia);
     List<Despacho> findByEquipeIdOrderByDataHoraDespachoDesc(Long id);
     List<Despacho> findAllByOrderByDataHoraDespachoDesc();
+
+    List<Despacho> findByDataHoraDespachoAfter(LocalDateTime minusHours);
 }
