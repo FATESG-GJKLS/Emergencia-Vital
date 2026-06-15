@@ -242,7 +242,7 @@ export class TelaGestor {
   }
 
   get profissionaisSemEquipe(): FuncionarioResponseDTO[] {
-    return this.funcionarios.filter((funcionario) => !funcionario.equipeAtivaId);
+    return this.funcionarios.filter((funcionario) => !funcionario.equipeAtivaId && funcionario.tipoFuncionario !== 'GESTOR' && funcionario.tipoFuncionario !== 'ATENDENTE');
   }
 
   get motoristasDisponiveis(): FuncionarioResponseDTO[] {
