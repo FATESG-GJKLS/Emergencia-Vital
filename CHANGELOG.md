@@ -6,7 +6,7 @@
 - [v0.1.0](#v010-2026-06-06)
 
 ## v1.0.0 (2026-06-14)
-### Padrões de Projeto Implementados
+### Baseline 04:
 - Implementação dos Padrões de Projeto (Adapter, Singleton, Factory, Iterator, Decorator, Template Method)
 - Correção de bug no Logger que afetava os testes
 - Melhorias na experiência do usuário: telas de login, gestor, atendente e profissional
@@ -123,7 +123,7 @@
 
 ---
 ## v0.3.0 (2026-06-13)
-### Baseline 03
+### Baseline 03:
 - CRUD completo de Gestores
 - CRUD completo de Atendentes
 - CRUD completo de Profissionais de Saúde
@@ -183,7 +183,7 @@
 
 ---
 ## v0.2.0 (2026-06-13)
-### Baseline 02
+### Baseline 02:
 - Implementado login com JWT
 - Autorização baseada em roles (Gestor/Atendente/Profissional)
 - Modelagem de funcionários
