@@ -1,0 +1,7 @@
+@import '../painel-base';
+::ng-deep .custom-toast {
+  background: var(--p-yellow-500)  !important;
+  .custom-toast-content {
+    color: black  !important;
+  }
+}

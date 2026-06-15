@@ -1,0 +1,52 @@
+<main class="pagina-login">
+  <section class="cartao-login" aria-label="Tela de login">
+    <div class="marca">
+      <div class="icone-marca" aria-hidden="true"></div>
+      <div>
+        <h1>Emergência Vital</h1>
+        <p>Sistema de Atendimento</p>
+      </div>
+    </div>
+
+    <div class="conteudo-login">
+      <span class="etiqueta">Acesso restrito</span>
+      <h2>Entrar no sistema</h2>
+      <p class="descricao">Informe seu CPF e senha para acessar as telas do seu perfil.</p>
+
+      <form (ngSubmit)="entrar()" class="formulario-login">
+        <label for="cpf">CPF</label>
+        <input
+          id="cpf"
+          name="cpf"
+          type="text"
+          [(ngModel)]="cpf"
+          (input)="formatarCPF($event)"
+          autocomplete="username"
+          placeholder="000.000.000-00"
+        />
+
+        <label for="senha">Senha</label>
+        <input
+          id="senha"
+          name="senha"
+          type="password"
+          [(ngModel)]="senha"
+          autocomplete="current-password"
+          placeholder="Digite sua senha"
+        />
+
+        @if (mensagemErro) {
+          <p class="mensagem-erro">{{ mensagemErro }}</p>
+        }
+
+        <button type="submit">Entrar</button>
+      </form>
+
+      <div class="ajuda-login">
+        <strong>Acessos de teste</strong>
+        <p>Gestor padrão: 241.796.780-47 / 123456</p>
+        <p>Os demais perfis dependem dos usuários cadastrados no backend.</p>
+      </div>
+    </div>
+  </section>
+</main>

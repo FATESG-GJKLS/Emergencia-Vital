@@ -1,0 +1,373 @@
+<div class="tela-sistema">
+  <aside class="barra-lateral">
+    <div class="marca-menor">
+      <span class="icone-menor"></span>
+      <div>
+        <strong>Emergência Vital</strong>
+        <small>Sistema de Gestão</small>
+      </div>
+    </div>
+
+    <nav>
+      <a routerLink="/gestor/dashboard" [class.ativo]="telaAtual === 'dashboard'">Dashboard</a>
+      <a routerLink="/gestor/equipes" [class.ativo]="telaAtual === 'equipes' || telaAtual === 'criar-equipe'">Equipes</a>
+      <a routerLink="/gestor/colaboradores" [class.ativo]="telaAtual === 'colaboradores' || telaAtual === 'cadastrar-colaborador'">Colaboradores</a>
+      <a routerLink="/gestor/ambulancias" [class.ativo]="telaAtual === 'ambulancias' || telaAtual === 'cadastrar-ambulancia'">Ambulâncias</a>
+      <a routerLink="/gestor/ocorrencias" [class.ativo]="telaAtual === 'ocorrencias'">Ocorrências</a>
+    </nav>
+
+    <button class="usuario" type="button" (click)="sair()">Deslogar</button>
+  </aside>
+
+  <main class="conteudo">
+    @switch (telaAtual) {
+      @case ('dashboard') {
+        <section class="cabecalho">
+          <div>
+            <h1>Dashboard</h1>
+            <p>Visão geral operacional do sistema de atendimento.</p>
+          </div>
+        </section>
+
+        <section class="grade-resumo">
+          <button class="cartao-atalho" type="button" (click)="trocarTela('equipes')"><span>Equipes</span><strong>{{ totalEquipes }}</strong><small>Disponíveis: {{ equipesDisponiveis }}</small></button>
+          <button class="cartao-atalho" type="button" (click)="trocarTela('colaboradores')"><span>Colaboradores</span><strong>{{ totalFuncionarios }}</strong><small>Profissionais da saúde: {{ profissionaisSaude }}</small></button>
+          <button class="cartao-atalho" type="button" (click)="trocarTela('ambulancias')"><span>Ambulâncias</span><strong>{{ totalAmbulancias }}</strong><small>Disponíveis: {{ ambulanciasDisponiveis }}</small></button>
+        </section>
+
+        <div class="grade-dashboard">
+          <section class="cartao-tabela">
+            <div class="titulo-cartao"><h2>Ocorrências</h2><button type="button" (click)="trocarTela('ocorrencias')">Abrir</button></div>
+            <p></p>
+          </section>
+
+          <section class="cartao-lista">
+            <div class="titulo-cartao"><h2>Profissionais sem equipe</h2><button type="button" (click)="trocarTela('colaboradores')">Ver</button></div>
+            @if (profissionaisSemEquipe.length) {
+              @for (funcionario of profissionaisSemEquipe.slice(0, 3); track funcionario.id) {
+                <p><strong>{{ funcionario.nome }}</strong><span>{{ funcionario.tipoFuncionario }}</span></p>
+              }
+            } @else {
+              <p>Nenhum profissional sem equipe.</p>
+            }
+          </section>
+        </div>
+      }
+
+      @case ('equipes') {
+        <section class="cabecalho">
+          <div>
+            <h1>Equipes</h1>
+            <p>Cadastro e acompanhamento das equipes de atendimento.</p>
+          </div>
+          <div class="acoes"><button type="button" (click)="trocarTela('criar-equipe')">+ Criar equipe</button></div>
+        </section>
+
+        <section class="filtros">
+          <button type="button" (click)="atualizarFiltroEquipe('TODAS')" [class.ativo]="filtroEquipe === 'TODAS'">Todos <strong>{{ totalEquipes }}</strong></button>
+          <button type="button" (click)="atualizarFiltroEquipe('Em Atendimento')" [class.ativo]="filtroEquipe === 'Em Atendimento'">Em atendimento <strong>{{ equipes.filter((equipe) => equipe.status === 'Em Atendimento').length }}</strong></button>
+          <button type="button" (click)="atualizarFiltroEquipe('Disponível')" [class.ativo]="filtroEquipe === 'Disponível'">Disponível <strong>{{ equipesDisponiveis }}</strong></button>
+        </section>
+
+        <div class="grade-cartoes">
+          @if (equipesFiltradas.length) {
+            @for (equipe of equipesFiltradas; track equipe.id) {
+              <div class="cartao-equipe">
+                <div class="acoes-cartao">
+                  @if (equipe.status !== 'Em Atendimento') {
+                    <button class="botao-status" type="button" (click)="alterarStatusEquipe(equipe.id)">
+                      {{ equipe.status === 'Inativa' ? 'Ativar' : 'Inativar' }}
+                    </button>
+                  }
+                </div>
+                <div class="conteudo-clicavel" (click)="trocarTela('criar-equipe')">
+                  <h2>Equipe {{ equipe.id }}</h2>
+                  <span class="status" [class.disponivel]="equipe.status === 'Disponível'" [class.atendimento]="equipe.status === 'Em Atendimento'">{{ formatarStatusEquipe(equipe.status) }}</span>
+                  <p><strong>Funcionários:</strong> {{ equipe.nomesFuncionarios?.join(', ') || 'Nenhum alocado' }}</p>
+                  <p><strong>Ambulância:</strong> {{ equipe.ambulanciaInfo || 'Sem vínculo' }}</p>
+                </div>
+              </div>
+            }
+          } @else {
+            <p>Nenhuma equipe cadastrada.</p>
+          }
+        </div>
+      }
+
+      @case ('criar-equipe') {
+        <section class="cabecalho">
+          <div>
+            <h1>Criar nova equipe</h1>
+            <p>Monte a equipe com profissionais disponíveis.</p>
+          </div>
+        </section>
+
+        <section class="formulario-painel formulario-curto">
+          <div>
+            <label for="motorista">Motorista de ambulância</label>
+            <select id="motorista"><option>Selecione</option>@for (funcionario of motoristasDisponiveis; track funcionario.id) {<option>{{ funcionario.nome }}</option>}</select>
+          </div>
+          <div>
+            <label for="ambulancia">Ambulância</label>
+            <select id="ambulancia"><option>Selecione</option>@for (ambulancia of ambulanciasLivres; track ambulancia.id) {<option>{{ ambulancia.placa }}</option>}</select>
+          </div>
+          <div>
+            <label for="medico">Médico</label>
+            <select id="medico"><option>Selecione</option>@for (funcionario of medicosDisponiveis; track funcionario.id) {<option>{{ funcionario.nome }}</option>}</select>
+          </div>
+          <div class="campo-grande campo-duplo">
+            <div>
+              <label for="enfermeiro">Enfermeiro</label>
+              <select id="enfermeiro"><option>Selecione</option>@for (funcionario of enfermeirosDisponiveis; track funcionario.id) {<option>{{ funcionario.nome }}</option>}</select>
+            </div>
+          </div>
+          <div class="acoes-formulario campo-grande">
+            <button type="button" (click)="cadastrarEquipe()">Criar Equipe</button>
+            <button class="secundario" type="button" (click)="trocarTela('equipes')">Cancelar</button>
+          </div>
+        </section>
+      }
+
+      @case ('colaboradores') {
+        <section class="cabecalho">
+          <div>
+            <h1>Colaboradores</h1>
+            <p>Profissionais cadastrados, disponíveis e vinculados a equipes.</p>
+          </div>
+          <div class="acoes"><button type="button" (click)="trocarTela('cadastrar-colaborador')">+ Novo colaborador</button></div>
+        </section>
+
+        <section class="grupo-colaboradores">
+          <h2>Profissionais sem equipe</h2>
+          <div class="linha-cartoes">
+            @if (profissionaisSemEquipe.length) {
+              @for (funcionario of profissionaisSemEquipe; track funcionario.id) {
+                <button class="cartao-pessoa" type="button" (click)="abrirEdicaoFuncionario(funcionario)"><span class="avatar"></span><strong>{{ funcionario.nome }}</strong><small>{{ funcionario.tipoFuncionario }}</small><p>CPF: {{ funcionario.CPF }}</p><p>Email: {{ funcionario.email }}</p><span class="link-tabela">editar</span></button>
+              }
+            } @else {
+              <p>Nenhum profissional sem equipe.</p>
+            }
+          </div>
+        </section>
+
+        <section class="grupo-colaboradores">
+          <h2>Todos</h2>
+          <div class="linha-cartoes varios">
+            @if (funcionarios.length) {
+              @for (funcionario of funcionarios; track funcionario.id) {
+                <button class="cartao-pessoa" type="button" (click)="abrirEdicaoFuncionario(funcionario)"><span class="avatar"></span><strong>{{ funcionario.nome }}</strong><small>{{ funcionario.tipoFuncionario }}</small><p>CPF: {{ funcionario.CPF }}</p><p>Email: {{ funcionario.email }}</p><span class="link-tabela">editar</span></button>
+              }
+            } @else {
+              <p>Nenhum colaborador cadastrado.</p>
+            }
+          </div>
+        </section>
+      }
+
+      @case ('cadastrar-colaborador') {
+        <section class="cabecalho"><div><h1>Cadastrar novo colaborador</h1><p>Preencha os dados básicos do profissional.</p></div></section>
+        <section class="formulario-painel formulario-curto">
+          <div><label for="nome-colaborador">Nome completo</label><input id="nome-colaborador" type="text" placeholder="Nome Sobrenome" [(ngModel)]="novoFuncionario.nome" /></div>
+          <div><label for="cpf-colaborador">CPF</label><input id="cpf-colaborador" type="text" placeholder="000.000.000-00" [(ngModel)]="novoFuncionario.CPF" (input)="formatarCPF($event, 'funcionario')" /></div>
+          <div><label for="email-colaborador">Email</label><input id="email-colaborador" type="email" placeholder="seuemail@email.com" [(ngModel)]="novoFuncionario.email" /></div>
+          <div><label for="senha-colaborador">Senha</label><input id="senha-colaborador" type="password" placeholder="SuaSenhaSegura#123" [(ngModel)]="novoFuncionario.senha" /></div>
+          <div><label for="funcao-colaborador">Função</label><select id="funcao-colaborador" [(ngModel)]="novoFuncionario.tipoFuncionario">
+            <option value="GESTOR">Gestor</option>
+            <option value="ATENDENTE">Atendente</option>
+            <option value="MEDICO">Médico</option>
+            <option value="ENFERMEIRO">Enfermeiro</option>
+            <option value="CONDUTOR">Motorista</option>
+          </select></div>
+          <div class="acoes-formulario campo-grande"><button type="button" (click)="cadastrarColaborador()">Cadastrar</button><button class="secundario" type="button" (click)="trocarTela('colaboradores')">Cancelar</button></div>
+        </section>
+      }
+
+      @case ('editar-colaborador') {
+        @if (funcionarioEmEdicao) {
+          <section class="cabecalho"><div><h1>Editar colaborador</h1><p>Altere as informações do profissional.</p></div></section>
+          <section class="formulario-painel formulario-curto">
+            <div><label for="edit-nome-colaborador">Nome completo</label><input id="edit-nome-colaborador" type="text" [(ngModel)]="funcionarioEmEdicao.nome" /></div>
+            <div><label for="edit-cpf-colaborador">CPF</label><input id="edit-cpf-colaborador" type="text" [(ngModel)]="funcionarioEmEdicao.CPF" (input)="formatarCPF($event, 'edicao')" /></div>
+            <div><label for="edit-email-colaborador">Email</label><input id="edit-email-colaborador" type="email" [(ngModel)]="funcionarioEmEdicao.email" /></div>
+            <div class="campo-grande">
+              <label>Status</label>
+              <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+                <input type="checkbox" id="edit-ativo-colaborador" [(ngModel)]="funcionarioEmEdicao.ativo" />
+                <label for="edit-ativo-colaborador" style="margin-bottom: 0;">Colaborador Ativo</label>
+              </div>
+            </div>
+            <div class="acoes-formulario campo-grande"><button type="button" (click)="editarColaborador()">Salvar Alterações</button><button class="secundario" type="button" (click)="trocarTela('colaboradores')">Cancelar</button></div>
+          </section>
+        }
+      }
+
+      @case ('ambulancias') {
+        <section class="cabecalho">
+          <div><h1>Ambulâncias</h1><p>Resumo visual das ambulâncias cadastradas no sistema.</p></div>
+          <div class="acoes"><button type="button" (click)="trocarTela('cadastrar-ambulancia')">+ Nova ambulância</button></div>
+        </section>
+        <section class="filtros">
+          <button type="button" (click)="atualizarFiltroAmbulancia('TODAS')" [class.ativo]="filtroAmbulancia === 'TODAS'">Todos <strong>{{ totalAmbulancias }}</strong></button>
+          <button type="button" (click)="atualizarFiltroAmbulancia('Livre')" [class.ativo]="filtroAmbulancia === 'Livre'">Disponível <strong>{{ ambulancias.filter((ambulancia) => ambulancia.status === 'Livre' || ambulancia.status === 'Atribuída').length }}</strong></button>
+          <button type="button" (click)="atualizarFiltroAmbulancia('Indisponível')" [class.ativo]="filtroAmbulancia === 'Indisponível'">Indisponível <strong>{{ totalAmbulancias - ambulancias.filter((ambulancia) => ambulancia.status === 'Livre' || ambulancia.status === 'Atribuída').length }}</strong></button>
+        </section>
+        <section class="cartao-tabela">
+          <input type="search" placeholder="Pesquisar" (input)="atualizarPesquisaAmbulancia($event)" [value]="termoPesquisaAmbulancia" />
+          <table><thead><tr><th>Placa</th><th>Modelo</th><th>Status</th><th>Ações</th></tr></thead><tbody>
+          @if (ambulanciasFiltradas.length) {
+            @for (ambulancia of ambulanciasFiltradas; track ambulancia.id) {
+              <tr>
+                <td>{{ ambulancia.placa }}</td>
+                <td>{{ ambulancia.modelo }}</td>
+                <td><span class="status" [class.disponivel]="ambulancia.status === 'Livre' || ambulancia.status === 'Atribuída'" [class.atendimento]="ambulancia.status === 'Em Atendimento'">{{ formatarStatusAmbulancia(ambulancia.status) }}</span></td>
+                <td>
+                  @if (ambulancia.status === 'Livre' || ambulancia.status === 'Indisponível') {
+                    <button class="link-tabela" type="button" (click)="abrirEdicaoAmbulancia(ambulancia)">editar</button>
+                  } @else {
+                    <span style="font-size: 0.8em; color: var(--cor-texto-secundario);">bloqueado</span>
+                  }
+                </td>
+              </tr>
+            }
+          } @else {
+            <tr><td colspan="4">Nenhuma ambulância cadastrada.</td></tr>
+          }
+        </tbody></table></section>
+      }
+
+      @case ('cadastrar-ambulancia') {
+        <section class="cabecalho"><div><h1>Cadastrar nova ambulância</h1><p>Dados do veículo usado no atendimento.</p></div></section>
+        <section class="formulario-painel formulario-curto">
+          <div><label for="modelo-ambulancia">Modelo da ambulância</label><select id="modelo-ambulancia" [(ngModel)]="novaAmbulancia.modelo">
+            <option value="Unidade de Suporte Básico">Unidade Suporte Básico (USB)</option>
+            <option value="Unidade de Suporte Avançado">Unidade Suporte Avançado (USA)</option>
+          </select></div>
+          <div><label for="placa-ambulancia">Placa</label><input id="placa-ambulancia" type="text" placeholder="ABC1D23" [(ngModel)]="novaAmbulancia.placa" (input)="formatarPlaca($event)" /></div>
+          <div class="acoes-formulario campo-grande"><button type="button" (click)="cadastrarAmbulancia()">Cadastrar</button><button class="secundario" type="button" (click)="trocarTela('ambulancias')">Cancelar</button></div>
+        </section>
+      }
+
+      @case ('editar-ambulancia') {
+        @if (ambulanciaEmEdicao) {
+          <section class="cabecalho"><div><h1>Editar ambulância</h1><p>Gerencie o status operacional do veículo.</p></div></section>
+          <section class="formulario-painel formulario-curto">
+            <div class="campo-grande"><label>Placa</label><p><strong>{{ ambulanciaEmEdicao.placa }}</strong></p></div>
+            <div class="campo-grande"><label>Modelo</label><p>{{ ambulanciaEmEdicao.modelo }}</p></div>
+            <div>
+              <label for="edit-status-ambulancia">Status</label>
+              <select id="edit-status-ambulancia" [(ngModel)]="ambulanciaEmEdicao.status">
+                <option value="Livre">Livre</option>
+                <option value="Indisponível">Indisponível</option>
+              </select>
+            </div>
+            <div class="acoes-formulario campo-grande"><button type="button" (click)="editarAmbulancia()">Salvar Alterações</button><button class="secundario" type="button" (click)="trocarTela('ambulancias')">Cancelar</button></div>
+          </section>
+        }
+      }
+
+      @case ('ocorrencias') {
+        <section class="cabecalho"><div><h1>Ocorrências</h1><p>Lista geral de ocorrências registradas.</p></div></section>
+        <section class="filtros">
+          <button type="button" (click)="atualizarFiltroOcorrencia('TODOS')" [class.ativo]="filtroOcorrencia === 'TODOS'">Todos <strong>{{ totalOcorrencias }}</strong></button>
+          <button type="button" (click)="atualizarFiltroOcorrencia('EM_ATENDIMENTO')" [class.ativo]="filtroOcorrencia === 'EM_ATENDIMENTO'">Em atendimento <strong>{{ ocorrenciasEmAtendimento }}</strong></button>
+          <button type="button" (click)="atualizarFiltroOcorrencia('CONCLUIDA')" [class.ativo]="filtroOcorrencia === 'CONCLUIDA'">Finalizados <strong>{{ ocorrenciasConcluidas }}</strong></button>
+        </section>
+        <section class="cartao-tabela">
+          <input type="search" placeholder="Pesquisar" (input)="atualizarPesquisaOcorrencia($event)" [value]="termoPesquisaOcorrencia" />
+          <table>
+            <thead><tr><th>Id</th><th>Urgência</th><th>Abertura</th><th>Solicitante</th><th>Status</th><th>Fechamento</th><th>Relatório</th></tr></thead>
+            <tbody>
+              @if (ocorrenciasFiltradas.length) {
+                @for (ocorrencia of ocorrenciasFiltradas; track ocorrencia.id) {
+                  <tr>
+                    <td>{{ ocorrencia.id }}</td>
+                    <td><span class="status" [class.critico]="ocorrencia.gravidade === 'ALTA'" [class.alto]="ocorrencia.gravidade === 'MEDIA'" [class.medio]="ocorrencia.gravidade === 'BAIXA'">{{ ocorrencia.gravidade }}</span></td>
+                    <td>{{ formatarDataHora(ocorrencia.dataHoraAbertura) }}</td>
+                    <td>{{ ocorrencia.solicitante.nome }}</td>
+                    <td><span class="status" [class.despachada]="ocorrencia.status === 'ABERTA'" [class.atendimento]="ocorrencia.status === 'EM_ATENDIMENTO'" [class.finalizado]="ocorrencia.status === 'CONCLUIDA'">{{ textoStatusOcorrencia(ocorrencia.status) }}</span></td>
+                    <td>{{ formatarDataHora(ocorrencia.dataHoraEncerramento) }}</td>
+                    <td><button class="link-tabela" type="button" (click)="abrirOcorrencia(ocorrencia)">abrir</button></td>
+                  </tr>
+                }
+              } @else {
+                <tr><td colspan="7">Nenhuma ocorrência encontrada.</td></tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      }
+
+      @case ('detalhes-ocorrencia') {
+        @if (ocorrenciaSelecionada) {
+          <section class="cabecalho">
+            <div>
+              <h1>Ocorrência #{{ ocorrenciaSelecionada.id }}</h1>
+              <p>Detalhes completos da ocorrência selecionada.</p>
+            </div>
+            <div class="acoes">
+              <button class="secundario" type="button" (click)="trocarTela('ocorrencias')">Voltar</button>
+            </div>
+          </section>
+
+          <section class="formulario-painel formulario-largo">
+            <div class="campo-grande subtitulo-formulario"><h2>Dados do Solicitante</h2></div>
+            <div><label>Nome</label><p>{{ ocorrenciaSelecionada.solicitante.nome }}</p></div>
+            <div><label>CPF</label><p>{{ ocorrenciaSelecionada.solicitante.CPF }}</p></div>
+
+            <div class="campo-grande subtitulo-formulario"><h2>Pacientes</h2></div>
+            @for (paciente of ocorrenciaSelecionada.pacientes; track $index) {
+              <div class="bloco-paciente-detalhe">
+                <div><label>Nome</label><p>{{ paciente.anonimo ? 'Anônimo' : paciente.nome }}</p></div>
+                <div><label>CPF</label><p>{{ paciente.anonimo ? 'N/A' : paciente.CPF }}</p></div>
+                <div class="campo-grande"><label>Observação</label><p>{{ paciente.observacoes || 'Sem observações' }}</p></div>
+              </div>
+            }
+
+            <div class="campo-grande subtitulo-formulario"><h2>Informações do Local</h2></div>
+            <div class="campo-grande"><label>Endereço</label><p>{{ ocorrenciaSelecionada.endereco }}</p></div>
+            <div><label>Bairro</label><p>{{ ocorrenciaSelecionada.bairro }}</p></div>
+            <div><label>Gravidade</label><p>{{ ocorrenciaSelecionada.gravidade }}</p></div>
+
+            <div class="campo-grande subtitulo-formulario"><h2>Descrição Técnica</h2></div>
+            <div class="campo-grande"><label>Relato</label><p>{{ ocorrenciaSelecionada.descricao }}</p></div>
+
+            <div class="campo-grande subtitulo-formulario"><h2>Status do Atendimento</h2></div>
+            <div><label>Abertura</label><p>{{ formatarDataHora(ocorrenciaSelecionada.dataHoraAbertura) }}</p></div>
+            <div><label>Encerramento</label><p>{{ formatarDataHora(ocorrenciaSelecionada.dataHoraEncerramento) }}</p></div>
+            <div><label>Status</label><p>{{ textoStatusOcorrencia(ocorrenciaSelecionada.status) }}</p></div>
+
+            @if (despachosDaOcorrenciaSelecionada.length > 0) {
+              <div class="campo-grande subtitulo-formulario"><h2>Despachos Realizados</h2></div>
+              <div class="campo-grande">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Equipe</th>
+                      <th>Ambulância</th>
+                      <th>Despacho</th>
+                      <th>Chegada Local</th>
+                      <th>Finalização</th>
+                      <th>Relatório</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (despacho of despachosDaOcorrenciaSelecionada; track despacho.id) {
+                      <tr>
+                        <td>{{ despacho.equipe.id }}</td>
+                        <td>{{ despacho.ambulancia.placa }}</td>
+                        <td>{{ formatarDataHora(despacho.dataHoraDespacho) }}</td>
+                        <td>{{ formatarDataHora(despacho.dataHoraChegadaLocal) }}</td>
+                        <td>{{ formatarDataHora(despacho.dataHoraFinalizacao) }}</td>
+                        <td>{{ despacho.relatorioFinalizacao || '-' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </section>
+        }
+      }
+    }
+  </main>
+</div>
