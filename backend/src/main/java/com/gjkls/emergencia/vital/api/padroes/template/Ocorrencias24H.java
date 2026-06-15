@@ -1,9 +1,7 @@
-package com.gjkls.emergencia.vital.api.configs;
+package com.gjkls.emergencia.vital.api.padroes.template;
 
-import java.util.concurrent.TimeUnit;
-
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import java.time.LocalDateTime;
+import java.util.Iterator;
 
 import com.gjkls.emergencia.vital.api.models.ocorrencia.Ocorrencia;
 import com.gjkls.emergencia.vital.api.models.ocorrencia.StatusOcorrencia;
@@ -12,18 +10,28 @@ import com.gjkls.emergencia.vital.api.padroes.factory.LoggerFactory;
 import com.gjkls.emergencia.vital.api.padroes.iterator.OcorrenciasIterator;
 import com.gjkls.emergencia.vital.api.repository.OcorrenciaRepository;
 
-@Component
-public class OcorrenciasTask {
+public class Ocorrencias24H extends TarefasTemplate {
     private final OcorrenciaRepository ocorrenciaRepository;
     private ILogging logger = LoggerFactory.getLogger();
-    
-    public OcorrenciasTask(OcorrenciaRepository ocorrenciaRepository) {
+
+    public Ocorrencias24H(OcorrenciaRepository ocorrenciaRepository) {
         this.ocorrenciaRepository = ocorrenciaRepository;
     }
 
-    @Scheduled(fixedRate = 24, timeUnit = TimeUnit.HOURS)
-    public void checarOcorrencias() {
-        OcorrenciasIterator iterator = new OcorrenciasIterator(ocorrenciaRepository.findAll().iterator());
+    @Override
+    protected String getTarefaNome() {
+        return "Checagem das Ocorrências em Aberto";
+    }
+
+    @Override
+    protected Object coletarDados() {
+        return new OcorrenciasIterator(ocorrenciaRepository.findByDataHoraAberturaAfter(
+                LocalDateTime.now().minusHours(24)).iterator());
+    }
+
+    @Override
+    protected void registrar(Object dados) {
+        Iterator<Ocorrencia> iterator = (OcorrenciasIterator) dados;
         while (iterator.hasNext()) {
             Ocorrencia ocorrencia = iterator.next();
             if (ocorrencia.getStatus() != StatusOcorrencia.CONCLUIDA) {
